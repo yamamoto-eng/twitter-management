@@ -20,7 +20,6 @@ const Index = (props: any) => {
 
   return (
     <div>
-      aaa
       <h1>{data.name}</h1>
       <p>{props.test.name}</p>
     </div>
