@@ -3,6 +3,7 @@ const User = ({ user }: any) => {
     <div>
       <h3>{user.name}</h3>
       <p>Email: {user.email} </p>
+      test 3
     </div>
   );
 };
