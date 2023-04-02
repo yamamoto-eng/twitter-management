@@ -1,13 +1,37 @@
 import { GetServerSidePropsContext } from "next";
+import { useEffect, useState } from "react";
 
 const Index = (props: any) => {
-  return <>top {props.test}</>;
+  const [data, setData] = useState<any>(null);
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/hello")
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      });
+  }, []);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (!data) return <p>No profile data</p>;
+
+  return (
+    <div>
+      aaa
+      <h1>{data.name}</h1>
+      <p>{props.test.name}</p>
+    </div>
+  );
 };
 
 export default Index;
 
 export async function getStaticProps(context: GetServerSidePropsContext) {
-  return {
-    props: { test: "test" },
-  };
+  const res = await fetch("https://main.d250u0sat172u3.amplifyapp.com/api/hello");
+  const test = await res.json();
+
+  return { props: { test } };
 }
