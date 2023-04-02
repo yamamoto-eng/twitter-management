@@ -6,8 +6,8 @@ const Index = (props: any) => {
 
 export default Index;
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+export async function getStaticProps(context: GetServerSidePropsContext) {
   return {
-    props: { test: ctx.resolvedUrl },
+    props: { test: "test" },
   };
-};
+}
