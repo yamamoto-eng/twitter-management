@@ -1,5 +1,13 @@
-import Head from "next/head";
+import { GetServerSidePropsContext } from "next";
 
-export default function Index() {
-  return <>top</>;
-}
+const Index = (props: any) => {
+  return <>top {props.test}</>;
+};
+
+export default Index;
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  return {
+    props: { test: ctx.resolvedUrl },
+  };
+};
