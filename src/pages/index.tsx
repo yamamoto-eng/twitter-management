@@ -25,6 +25,8 @@ const Index = (props: any) => {
       {process.env.NODE_ENV === "development" && <p>development</p>}
       {process.env.NODE_ENV === "production" && <p>production</p>}
       {process.env.NODE_ENV === "test" && <p>test</p>}
+      <br />
+      {process.env.NODE_ENV}
     </div>
   );
 };
