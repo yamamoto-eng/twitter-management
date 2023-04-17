@@ -1,4 +1,5 @@
 import { withSessionSsr } from "@/server/utils/withSession";
+import axios from "axios";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -9,16 +10,51 @@ type Props = {
 
 const Index: NextPage<Props> = (props) => {
   const { isAuth } = props;
-  const router = useRouter();
 
-  useEffect(() => {
-    if (!isAuth) {
-      router.push("/login");
-    }
-    // eslint-disable-next-line
-  }, []);
+  const [text, setText] = useState("");
 
-  return <div>top</div>;
+  const tweet = () => {
+    axios
+      .post("/api/tweet", { text })
+      .then((res) => {
+        setText("");
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
+  const logout = () => {
+    axios
+      .post("api/logout")
+      .then(() => {})
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
+  if (!isAuth) {
+    return (
+      // TODO: APIで呼び出したい
+      <form action="/api/login" method="post">
+        <button type="submit">login</button>
+      </form>
+    );
+  }
+
+  return (
+    <div>
+      <form action="/api/login" method="post">
+        <button type="submit">login</button>
+      </form>
+      <button onClick={logout}>logout</button>
+      <br />
+      <label htmlFor="tweet">text</label>
+      <input id="tweet" value={text} onChange={(e) => setText(e.target.value)} />
+      <br />
+      <button onClick={tweet}>tweet</button>
+    </div>
+  );
 };
 
 export default Index;

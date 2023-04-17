@@ -3,7 +3,7 @@ import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  axios
+  await axios
     .post(
       "https://api.twitter.com/2/tweets",
       { text: req.body.text },
@@ -20,6 +20,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .catch((e) => {
       throw e;
     });
+
+  res.end();
 };
 
 export default withSessionApi(handler);

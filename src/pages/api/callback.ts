@@ -19,17 +19,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   params.append("client_id", process.env.CLIENT_ID ?? "");
   params.append("code", req.session.authorize.code ?? "");
 
-  axios
+  await axios
     .post(endPoint, params, { headers })
     .then(async (response) => {
       req.session.accessToken = response.data.access_token;
       req.session.refreshToken = response.data.refresh_token;
       await req.session.save();
-      return res.send({ success: true });
+      res.send({ success: true });
     })
     .catch((e) => {
       throw e;
     });
+
+  res.end();
 };
 
 export default withSessionApi(handler);

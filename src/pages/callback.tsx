@@ -10,7 +10,7 @@ const Callback: NextPage = () => {
   const callback = async () => {
     await axios("/api/callback")
       .then((res) => {
-        router.push("/tweet");
+        router.push("/");
       })
       // TODO: error画面に遷移
       .catch((err) => {
