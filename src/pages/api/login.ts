@@ -19,13 +19,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     code_challenge_method: "s256",
   });
 
-  const authorize = {
-    state,
-    codeVerifier,
-    referer: req.headers.referer ?? "",
-  };
-
-  req.session.authorize = authorize;
+  req.session.state = state;
+  req.session.codeVerifier = codeVerifier;
   await req.session.save();
 
   res.redirect(`${endPoint}?${params}`);

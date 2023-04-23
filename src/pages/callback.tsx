@@ -29,7 +29,7 @@ const Callback: NextPage = () => {
 export const getServerSideProps = withSessionSsr(async (ctx) => {
   const { query } = ctx;
 
-  if (ctx.req.session.authorize.state !== query.state) {
+  if (ctx.req.session.state !== query.state) {
     return {
       // TODO: error画面に遷移
       redirect: {
@@ -40,7 +40,7 @@ export const getServerSideProps = withSessionSsr(async (ctx) => {
   }
 
   const code = query.code as string;
-  ctx.req.session.authorize.code = code;
+  ctx.req.session.code = code;
   await ctx.req.session.save();
 
   return { props: {} };

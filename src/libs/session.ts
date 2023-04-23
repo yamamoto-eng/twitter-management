@@ -1,12 +1,5 @@
 import type { IronSessionOptions } from "iron-session";
 
-type Authorize = {
-  state: string;
-  codeVerifier: string;
-  referer: string;
-  code?: string;
-};
-
 export const sessionOptions: IronSessionOptions = {
   password: {
     1: process.env.COOKIE_PASSWORD_1 ?? "",
@@ -21,8 +14,10 @@ export const sessionOptions: IronSessionOptions = {
 
 declare module "iron-session" {
   interface IronSessionData {
-    authorize: Authorize;
     accessToken: string;
     refreshToken: string;
+    state: string;
+    codeVerifier: string;
+    code: string;
   }
 }

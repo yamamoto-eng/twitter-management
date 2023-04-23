@@ -15,9 +15,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const params = new URLSearchParams();
   params.append("grant_type", "authorization_code");
   params.append("redirect_uri", "http://localhost:3000/callback");
-  params.append("code_verifier", req.session.authorize.codeVerifier);
+  params.append("code_verifier", req.session.codeVerifier);
   params.append("client_id", process.env.CLIENT_ID ?? "");
-  params.append("code", req.session.authorize.code ?? "");
+  params.append("code", req.session.code);
 
   await axios
     .post(endPoint, params, { headers })
