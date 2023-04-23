@@ -1,23 +1,23 @@
+import { twitter } from "@/constants";
+import { auth } from "@/server/utils";
 import { withSessionApi } from "@/server/utils/withSession";
 import axios from "axios";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-const buf = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`);
-const base64Auth = buf.toString("base64");
+import { NextApiHandler } from "next";
 
 const endPoint = "https://api.twitter.com/2/oauth2/token";
 const headers = {
   "Content-Type": "application/x-www-form-urlencoded",
-  Authorization: `Basic ${base64Auth}`,
+  Authorization: `Basic ${auth}`,
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const params = new URLSearchParams();
-  params.append("grant_type", "authorization_code");
-  params.append("redirect_uri", "http://localhost:3000/callback");
-  params.append("code_verifier", req.session.codeVerifier);
-  params.append("client_id", process.env.CLIENT_ID ?? "");
-  params.append("code", req.session.code);
+const handler: NextApiHandler = async (req, res) => {
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    client_id: twitter.clientId,
+    redirect_uri: twitter.redirectUri,
+    code: req.session.code,
+    code_verifier: req.session.codeVerifier,
+  });
 
   await axios
     .post(endPoint, params, { headers })
@@ -30,8 +30,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .catch((e) => {
       throw e;
     });
-
-  res.end();
 };
 
 export default withSessionApi(handler);

@@ -1,19 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextApiHandler } from "next";
 
 import { withSessionApi } from "@/server/utils/withSession";
 import axios from "axios";
-
-const buf = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`);
-const base64Auth = buf.toString("base64");
+import { auth } from "@/server/utils";
 
 const endPoint = "https://api.twitter.com/2/oauth2/revoke";
 
 const headers = {
   "Content-Type": "application/x-www-form-urlencoded",
-  Authorization: `Basic ${base64Auth}`,
+  Authorization: `Basic ${auth}`,
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler: NextApiHandler = async (req, res) => {
   await axios
     .post(
       endPoint,
@@ -30,8 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .catch((e) => {
       throw e;
     });
-
-  res.end();
 };
 
 export default withSessionApi(handler);

@@ -1,18 +1,19 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextApiHandler } from "next";
 import { generators } from "openid-client";
 import { withSessionApi } from "@/server/utils/withSession";
+import { twitter } from "@/constants";
 
 const endPoint = "https://twitter.com/i/oauth2/authorize";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler: NextApiHandler = async (req, res) => {
   const state = generators.state();
   const codeVerifier = generators.codeVerifier();
   const codeChallenge = generators.codeChallenge(codeVerifier);
 
   const params = new URLSearchParams({
     response_type: "code",
-    client_id: process.env.CLIENT_ID ?? "",
-    redirect_uri: "http://localhost:3000/callback",
+    client_id: twitter.clientId,
+    redirect_uri: twitter.redirectUri,
     scope: "tweet.read users.read tweet.write offline.access",
     state,
     code_challenge: codeChallenge,
