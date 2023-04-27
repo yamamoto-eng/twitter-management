@@ -61,14 +61,8 @@ const Index: NextPage<Props> = (props) => {
 
 export default Index;
 
-// export const getServerSideProps = withSessionSsr<Props>(async (ctx) => {
-//   const isAuth = !!ctx.req.session.accessToken;
-
-//   return { props: { isAuth } };
-// });
-
-export const getServerSideProps = () => {
-  const isAuth = true;
+export const getServerSideProps = withSessionSsr<Props>(async (ctx) => {
+  const isAuth = !!ctx.req?.session?.accessToken;
 
   return { props: { isAuth } };
-};
+});
