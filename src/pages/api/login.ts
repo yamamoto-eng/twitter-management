@@ -24,7 +24,8 @@ const handler: NextApiHandler = async (req, res) => {
   req.session.codeVerifier = codeVerifier;
   await req.session.save();
 
-  res.redirect(`${endPoint}?${params}`);
+  res.setHeader("Location", `${endPoint}?${params}`);
+  res.status(302).end();
 };
 
 export default withSessionApi(handler);
