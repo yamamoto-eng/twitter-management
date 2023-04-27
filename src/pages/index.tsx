@@ -28,7 +28,7 @@ const Index: NextPage<Props> = (props) => {
 
   const logout = () => {
     axios
-      .post("api/logout")
+      .post("/api/logout")
       .then(() => {})
       .catch((e) => {
         console.error(e);
