@@ -9,8 +9,8 @@ type Props = {
   isAuth: boolean;
 };
 
-const Index: NextPage<Props> = (props) => {
-  const { isAuth } = props;
+const Index: NextPage<Props> = () => {
+  // const { isAuth } = props;
   const { data } = trpc.hello.useQuery({ text: "sample" });
 
   const [text, setText] = useState("");
@@ -35,14 +35,14 @@ const Index: NextPage<Props> = (props) => {
       });
   };
 
-  if (!isAuth) {
-    return (
-      // TODO: APIで呼び出したい
-      <form action="/api/login" method="post">
-        <button type="submit">login</button>
-      </form>
-    );
-  }
+  // if (!isAuth) {
+  //   return (
+  //     // TODO: APIで呼び出したい
+  //     <form action="/api/login" method="post">
+  //       <button type="submit">login</button>
+  //     </form>
+  //   );
+  // }
 
   return (
     <div>
@@ -62,8 +62,8 @@ const Index: NextPage<Props> = (props) => {
 
 export default Index;
 
-export const getServerSideProps = withSessionSsr<Props>(async (ctx) => {
-  const isAuth = !!ctx.req.session.accessToken;
+// export const getServerSideProps = withSessionSsr<Props>(async (ctx) => {
+//   const isAuth = !!ctx.req.session.accessToken;
 
-  return { props: { isAuth } };
-});
+//   return { props: { isAuth } };
+// });

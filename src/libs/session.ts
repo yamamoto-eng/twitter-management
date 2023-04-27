@@ -8,7 +8,7 @@ export const sessionOptions: IronSessionOptions = {
   cookieName: process.env.COOKIE_NAME,
   cookieOptions: {
     httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production",
   },
 };
 
