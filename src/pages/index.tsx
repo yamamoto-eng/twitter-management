@@ -2,15 +2,14 @@ import { withSessionSsr } from "@/server/utils/withSession";
 import { trpc } from "@/utils/trpc";
 import axios from "axios";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   isAuth: boolean;
 };
 
-const Index: NextPage<Props> = () => {
-  // const { isAuth } = props;
+const Index: NextPage<Props> = (props) => {
+  const { isAuth } = props;
   const { data } = trpc.hello.useQuery({ text: "sample" });
 
   const [text, setText] = useState("");
@@ -35,14 +34,14 @@ const Index: NextPage<Props> = () => {
       });
   };
 
-  // if (!isAuth) {
-  //   return (
-  //     // TODO: APIで呼び出したい
-  //     <form action="/api/login" method="post">
-  //       <button type="submit">login</button>
-  //     </form>
-  //   );
-  // }
+  if (!isAuth) {
+    return (
+      // TODO: APIで呼び出したい
+      <form action="/api/login" method="post">
+        <button type="submit">login</button>
+      </form>
+    );
+  }
 
   return (
     <div>
@@ -67,3 +66,9 @@ export default Index;
 
 //   return { props: { isAuth } };
 // });
+
+export const getServerSideProps = () => {
+  const isAuth = true;
+
+  return { props: { isAuth } };
+};
