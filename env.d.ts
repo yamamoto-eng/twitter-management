@@ -6,5 +6,6 @@ declare namespace NodeJS {
       COOKIE_PASSWORD_1: string;
       COOKIE_PASSWORD_2: string;
       COOKIE_NAME: string;
+      BASE_URL: string;
     }> {}
 }

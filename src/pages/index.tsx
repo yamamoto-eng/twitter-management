@@ -1,4 +1,5 @@
 import { withSessionSsr } from "@/server/utils/withSession";
+import { trpc } from "@/utils/trpc";
 import axios from "axios";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -10,6 +11,7 @@ type Props = {
 
 const Index: NextPage<Props> = (props) => {
   const { isAuth } = props;
+  const { data } = trpc.hello.useQuery({ text: "sample" });
 
   const [text, setText] = useState("");
 
@@ -44,6 +46,7 @@ const Index: NextPage<Props> = (props) => {
 
   return (
     <div>
+      {data?.greeting}
       <form action="/api/login" method="post">
         <button type="submit">login</button>
       </form>
