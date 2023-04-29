@@ -2,6 +2,7 @@ import { withSessionSsr } from "@/server/utils/withSession";
 import { trpc } from "@/utils/trpc";
 import axios from "axios";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 type Props = {
@@ -10,7 +11,9 @@ type Props = {
 
 const Index: NextPage<Props> = (props) => {
   const { isAuth } = props;
+  const router = useRouter();
   const { data } = trpc.hello.useQuery({ text: "sample" });
+  const { mutateAsync } = trpc.auth.login.useMutation();
 
   const [text, setText] = useState("");
 
@@ -34,21 +37,22 @@ const Index: NextPage<Props> = (props) => {
       });
   };
 
+  const login = async () => {
+    const res = await mutateAsync();
+    router.push(res.redirectUrl);
+  };
+
   if (!isAuth) {
     return (
-      // TODO: APIで呼び出したい
-      <form action="/api/login" method="post">
-        <button type="submit">login</button>
-      </form>
+      <div>
+        <button onClick={login}>login</button>
+      </div>
     );
   }
 
   return (
     <div>
       {data?.greeting}
-      <form action="/api/login" method="post">
-        <button type="submit">login</button>
-      </form>
       <button onClick={logout}>logout</button>
       <br />
       <label htmlFor="tweet">text</label>
