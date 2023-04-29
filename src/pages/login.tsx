@@ -1,12 +1,19 @@
+import { trpc } from "@/utils/trpc";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 
 const Login: NextPage = () => {
+  const router = useRouter();
+  const { mutateAsync } = trpc.auth.login.useMutation();
+
+  const login = async () => {
+    const res = await mutateAsync();
+    router.push(res.redirectUrl);
+  };
+
   return (
     <div>
-      {/* TODO: APIで呼び出したい */}
-      <form action="/api/login" method="post">
-        <button type="submit">login</button>
-      </form>
+      <button onClick={login}>login</button>
     </div>
   );
 };
