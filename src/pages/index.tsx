@@ -1,32 +1,31 @@
 import { trpc } from "@/utils/trpc";
-import axios from "axios";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Index: NextPage = () => {
   const router = useRouter();
+  const { mutateAsync } = trpc.auth.logout.useMutation();
+  const { mutateAsync: tweetMutateAsync } = trpc.twitter.tweet.useMutation();
   const { data } = trpc.auth.check.useQuery(undefined, {
     onSuccess: (data) => {
       if (!data?.isAuth) {
         router.push("/login");
+        return;
       }
     },
   });
 
-  const { mutateAsync } = trpc.auth.logout.useMutation();
-
   const [text, setText] = useState("");
 
-  const tweet = () => {
-    axios
-      .post("/api/tweet", { text })
-      .then((res) => {
+  const tweet = async () => {
+    try {
+      const { success } = await tweetMutateAsync({ text });
+      if (success) {
         setText("");
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+        return;
+      }
+    } catch {}
   };
 
   const logout = async () => {
