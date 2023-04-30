@@ -1,18 +1,12 @@
-import { withSessionSsr } from "@/server/utils/withSession";
 import { trpc } from "@/utils/trpc";
 import axios from "axios";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-type Props = {
-  isAuth: boolean;
-};
-
-const Index: NextPage<Props> = (props) => {
-  const { isAuth } = props;
+const Index: NextPage = () => {
   const router = useRouter();
-  const { data } = trpc.hello.useQuery({ text: "sample" });
+  const { data } = trpc.auth.check.useQuery();
   const { mutateAsync } = trpc.auth.login.useMutation();
 
   const [text, setText] = useState("");
@@ -42,7 +36,7 @@ const Index: NextPage<Props> = (props) => {
     router.push(res.redirectUrl);
   };
 
-  if (!isAuth) {
+  if (!data?.isAuth) {
     return (
       <div>
         <button onClick={login}>login</button>
@@ -52,7 +46,6 @@ const Index: NextPage<Props> = (props) => {
 
   return (
     <div>
-      {data?.greeting}
       <button onClick={logout}>logout</button>
       <br />
       <label htmlFor="tweet">text</label>
@@ -64,9 +57,3 @@ const Index: NextPage<Props> = (props) => {
 };
 
 export default Index;
-
-export const getServerSideProps = withSessionSsr<Props>(async (ctx) => {
-  const isAuth = !!ctx.req?.session?.accessToken;
-
-  return { props: { isAuth } };
-});
