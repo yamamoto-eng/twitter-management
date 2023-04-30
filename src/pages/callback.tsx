@@ -1,21 +1,23 @@
-import axios from "axios";
 import { GetServerSideProps, NextPage } from "next";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { withSessionSsr } from "@/server/utils/withSession";
+import { trpc } from "@/utils/trpc";
 
-const Callback: NextPage = () => {
+type PageProps = {
+  state: string;
+  code: string;
+};
+
+const Callback: NextPage<PageProps> = ({ state, code }) => {
   const router = useRouter();
+  const { mutateAsync } = trpc.auth.callback.useMutation();
 
   const callback = async () => {
-    await axios("/api/callback")
-      .then((res) => {
-        router.push("/");
-      })
-      // TODO: error画面に遷移
-      .catch((err) => {
-        console.log("error");
-      });
+    const { success } = await mutateAsync({ state, code });
+    if (success) {
+      router.push("/");
+    }
+    router.push("/login");
   };
 
   useEffect(() => {
@@ -26,24 +28,15 @@ const Callback: NextPage = () => {
   return <></>;
 };
 
-export const getServerSideProps = withSessionSsr(async (ctx) => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => {
   const { query } = ctx;
 
-  if (ctx.req.session.state !== query.state) {
-    return {
-      // TODO: error画面に遷移
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  const code = query.code as string;
-  ctx.req.session.code = code;
-  await ctx.req.session.save();
-
-  return { props: {} };
-});
+  return {
+    props: {
+      state: query.state as string,
+      code: query.code as string,
+    },
+  };
+};
 
 export default Callback;
