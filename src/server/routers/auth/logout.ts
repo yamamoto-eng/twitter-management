@@ -1,3 +1,4 @@
+import { procedure } from "@/server/trpc";
 import { NextApiHandler } from "next";
 
 import { withSessionApi } from "@/server/utils/withSession";
@@ -11,23 +12,21 @@ const headers = {
   Authorization: `Basic ${auth}`,
 };
 
-const handler: NextApiHandler = async (req, res) => {
-  await axios
-    .post(
+export const logout = procedure.mutation(async ({ ctx }) => {
+  const session = ctx.session;
+
+  try {
+    await axios.post(
       endPoint,
       {
-        token: req.session.accessToken,
+        token: session.accessToken,
         token_type_hint: "access_token",
       },
       { headers }
-    )
-    .then(async (response) => {
-      await req.session.destroy();
-      res.send({ success: true });
-    })
-    .catch((e) => {
-      throw e;
-    });
-};
-
-export default withSessionApi(handler);
+    );
+    await session.destroy();
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+});

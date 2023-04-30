@@ -13,11 +13,15 @@ const Callback: NextPage<PageProps> = ({ state, code }) => {
   const { mutateAsync } = trpc.auth.callback.useMutation();
 
   const callback = async () => {
-    const { success } = await mutateAsync({ state, code });
-    if (success) {
-      router.push("/");
-    }
-    router.push("/login");
+    try {
+      const { success } = await mutateAsync({ state, code });
+      if (success) {
+        router.push("/");
+        return;
+      }
+
+      router.push("/login");
+    } catch {}
   };
 
   useEffect(() => {

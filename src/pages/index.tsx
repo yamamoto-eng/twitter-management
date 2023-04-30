@@ -2,12 +2,19 @@ import { trpc } from "@/utils/trpc";
 import axios from "axios";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Index: NextPage = () => {
   const router = useRouter();
-  const { data } = trpc.auth.check.useQuery();
-  const { mutateAsync } = trpc.auth.login.useMutation();
+  const { data } = trpc.auth.check.useQuery(undefined, {
+    onSuccess: (data) => {
+      if (!data?.isAuth) {
+        router.push("/login");
+      }
+    },
+  });
+
+  const { mutateAsync } = trpc.auth.logout.useMutation();
 
   const [text, setText] = useState("");
 
@@ -22,26 +29,15 @@ const Index: NextPage = () => {
       });
   };
 
-  const logout = () => {
-    axios
-      .post("/api/logout")
-      .then(() => {})
-      .catch((e) => {
-        console.error(e);
-      });
-  };
-
-  const login = async () => {
-    const res = await mutateAsync();
-    router.push(res.redirectUrl);
+  const logout = async () => {
+    const { success } = await mutateAsync();
+    if (success) {
+      router.reload();
+    }
   };
 
   if (!data?.isAuth) {
-    return (
-      <div>
-        <button onClick={login}>login</button>
-      </div>
-    );
+    return <></>;
   }
 
   return (
