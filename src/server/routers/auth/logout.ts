@@ -1,7 +1,4 @@
 import { procedure } from "@/server/trpc";
-import { NextApiHandler } from "next";
-
-import { withSessionApi } from "@/server/utils/withSession";
 import axios from "axios";
 import { auth } from "@/server/utils";
 
