@@ -3,7 +3,7 @@ backend:
   phases:
     build:
       commands:
-        - '# Execute Amplify CLI with the helper script'
+        - "# Execute Amplify CLI with the helper script"
         - amplifyPush --simple
 frontend:
   phases:
@@ -12,11 +12,16 @@ frontend:
         - yarn install
     build:
       commands:
+        - echo "CLIENT_ID=$CLIENT_ID" >> .env
+        - echo "CLIENT_SECRET=$CLIENT_SECRET" >> .env
+        - echo "COOKIE_PASSWORD_1=$COOKIE_PASSWORD_1" >> .env
+        - echo "COOKIE_PASSWORD_2=$COOKIE_PASSWORD_2" >> .env
+        - echo "COOKIE_NAME=$COOKIE_NAME" >> .env
         - yarn run build
   artifacts:
     baseDirectory: .next
     files:
-      - '**/*'
+      - "**/*"
   cache:
     paths:
       - node_modules/**/*
