@@ -11,7 +11,8 @@ export const login = procedure.mutation(async ({ ctx }) => {
 
   const params = new URLSearchParams({
     response_type: "code",
-    client_id: twitter.clientId,
+    // client_id: twitter.clientId,
+    client_id: process.env.CLIENT_ID,
     redirect_uri: twitter.redirectUri,
     scope: "tweet.read users.read tweet.write offline.access",
     state,
