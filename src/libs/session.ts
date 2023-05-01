@@ -2,10 +2,10 @@ import type { IronSessionOptions } from "iron-session";
 
 export const sessionOptions: IronSessionOptions = {
   password: {
-    1: "8HDplabQPHikfrG2Y4JwqoJXL7Taethf",
-    2: "8HDplabQPHikfrG2Y4JwqoJXL7Taethf",
+    1: process.env.COOKIE_PASSWORD_1,
+    2: process.env.COOKIE_PASSWORD_2,
   },
-  cookieName: "test-name",
+  cookieName: process.env.COOKIE_NAME,
   cookieOptions: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
