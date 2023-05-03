@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate:twitter-api": "docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/docs/openapi/twitter-api-v2.json -g typescript-axios -o /local/src/api-client/twitter-v2"
   },
   "dependencies": {
     "@emotion/react": "^11.10.8",
