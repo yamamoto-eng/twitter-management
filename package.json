@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "swagger": "docker run -p 80:8080 -e SWAGGER_JSON=/local/twitter-api-v2.json -v $(pwd)/docs/openapi:/local swaggerapi/swagger-ui",
     "generate:twitter-api": "docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/docs/openapi/twitter-api-v2.json -g typescript-axios -o /local/src/api-client/twitter-v2"
   },
   "dependencies": {
