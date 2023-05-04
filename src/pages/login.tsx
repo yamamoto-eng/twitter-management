@@ -8,7 +8,7 @@ const Login: NextPage = () => {
 
   const login = async () => {
     const res = await mutateAsync();
-    router.push(res.redirectUrl);
+    router.push(res.authorizeURL);
   };
 
   return (

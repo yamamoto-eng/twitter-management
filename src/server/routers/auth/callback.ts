@@ -1,14 +1,6 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
-import { twitter } from "@/constants";
-import { auth } from "@/server/utils";
-import axios from "axios";
-
-const endPoint = "https://api.twitter.com/2/oauth2/token";
-const headers = {
-  "Content-Type": "application/x-www-form-urlencoded",
-  Authorization: `Basic ${auth}`,
-};
+import { tokenAuthorizationCode } from "@/server/services/tokenAuthorizationCode";
 
 export const callback = procedure
   .input(
@@ -25,23 +17,18 @@ export const callback = procedure
       return { success: false };
     }
 
-    const params = new URLSearchParams({
-      grant_type: "authorization_code",
-      client_id: twitter.clientId,
-      redirect_uri: twitter.redirectUri,
-      code: input.code,
-      code_verifier: session.codeVerifier,
-    });
-
     try {
-      const { data } = await axios.post(endPoint, params, { headers });
+      const { accessToken, refreshToken } = await tokenAuthorizationCode({
+        code: input.code,
+        codeVerifier: session.codeVerifier,
+      });
 
-      session.accessToken = data.access_token;
-      session.refreshToken = data.refresh_token;
+      session.accessToken = accessToken;
+      session.refreshToken = refreshToken;
       await session.save();
 
       return { success: true };
-    } catch {
+    } catch (e) {
       return { success: false };
     }
   });
