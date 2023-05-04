@@ -1,5 +1,7 @@
 import { UsersApi, Configuration, TweetsApi } from "@/api-client/twitter-v2";
 import { Context } from "@/server/context";
+import { isAxiosError } from "axios";
+import { tokenRefresh } from "./tokenRefresh";
 
 class TwitterApiV2 {
   private readonly config;
@@ -19,6 +21,24 @@ class TwitterApiV2 {
   }
 }
 
-export const twitterApiV2 = (ctx: Context) => {
-  return new TwitterApiV2(ctx);
+export const twitterApiV2 = async <T>(ctx: Context, api: (client: TwitterApiV2) => T): Promise<T> => {
+  const client = new TwitterApiV2(ctx);
+
+  try {
+    return await api(client);
+  } catch (e) {
+    if (isAxiosError(e)) {
+      if (e.response?.status === 401 && e.response?.statusText === "Unauthorized") {
+        const { accessToken, refreshToken } = await tokenRefresh({ refreshToken: ctx.session.refreshToken });
+        ctx.session.accessToken = accessToken;
+        ctx.session.refreshToken = refreshToken;
+        await ctx.session.save();
+
+        const client = new TwitterApiV2(ctx);
+        return await api(client);
+      }
+    }
+
+    throw e;
+  }
 };

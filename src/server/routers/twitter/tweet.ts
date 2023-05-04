@@ -10,7 +10,7 @@ export const tweet = procedure
   )
   .mutation(async ({ ctx, input }) => {
     try {
-      await twitterApiV2(ctx).tweets.createTweet({ text: input.text });
+      await twitterApiV2(ctx, (client) => client.tweets.createTweet(input));
 
       return { success: true };
     } catch {

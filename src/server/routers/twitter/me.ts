@@ -1,4 +1,4 @@
-import { twitterApiV2 } from "@/server/services/twitterApiV2";
+import {  twitterApiV2 } from "@/server/services/twitterApiV2";
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
 
@@ -8,7 +8,7 @@ export const me = procedure
     const userFields = new Set<"profile_image_url">(["profile_image_url"]);
 
     try {
-      const { data } = await twitterApiV2(ctx).users.findMyUser(userFields);
+      const { data } = await twitterApiV2(ctx, (client) => client.users.findMyUser(userFields));
 
       return {
         name: data.data?.name,
