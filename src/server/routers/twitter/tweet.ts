@@ -1,6 +1,6 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
-import axios from "axios";
+import { twitterApiV2 } from "@/server/services/twitterApiV2";
 
 export const tweet = procedure
   .input(
@@ -10,16 +10,8 @@ export const tweet = procedure
   )
   .mutation(async ({ ctx, input }) => {
     try {
-      await axios.post(
-        "https://api.twitter.com/2/tweets",
-        { text: input.text },
-        {
-          headers: {
-            Authorization: `Bearer ${ctx.session.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await twitterApiV2(ctx).tweets.createTweet({ text: input.text });
+
       return { success: true };
     } catch {
       return { success: false };

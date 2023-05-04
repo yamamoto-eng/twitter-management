@@ -1,27 +1,19 @@
+import { twitterApiV2 } from "@/server/services/twitterApiV2";
 import { procedure } from "@/server/trpc";
-import axios from "axios";
 import { z } from "zod";
 
 export const me = procedure
   .output(z.union([z.object({ name: z.string(), userName: z.string(), image: z.string() }), z.object({})]))
   .query(async ({ ctx }) => {
+    const userFields = new Set<"profile_image_url">(["profile_image_url"]);
+
     try {
-      const { data } = await axios.get("https://api.twitter.com/2/users/me", {
-        headers: {
-          Authorization: `Bearer ${ctx.session.accessToken}`,
-          "Content-Type": "application/json",
-        },
-        params: {
-          "user.fields": "profile_image_url",
-        },
-      });
+      const { data } = await twitterApiV2(ctx).users.findMyUser(userFields);
 
       return {
-        name: data.data.name as string,
-        userName: data.data.username as string,
-        image: data.data.profile_image_url as string,
+        name: data.data?.name,
+        userName: data.data?.username,
+        image: data.data?.profile_image_url,
       };
-    } catch {
-      return {};
-    }
+    } catch (e) {}
   });
