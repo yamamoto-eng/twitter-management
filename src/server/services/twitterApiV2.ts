@@ -29,9 +29,9 @@ export const twitterApiV2 = async <T>(ctx: Context, api: (client: TwitterApiV2) 
   } catch (e) {
     if (isAxiosError(e)) {
       if (e.response?.status === 401 && e.response?.statusText === "Unauthorized") {
-        const { accessToken, refreshToken } = await tokenRefresh({ refreshToken: ctx.session.refreshToken });
-        ctx.session.accessToken = accessToken;
-        ctx.session.refreshToken = refreshToken;
+        const { data } = await tokenRefresh({ refreshToken: ctx.session.refreshToken });
+        ctx.session.accessToken = data.access_token;
+        ctx.session.refreshToken = data.refresh_token;
         await ctx.session.save();
 
         const client = new TwitterApiV2(ctx);

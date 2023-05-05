@@ -18,13 +18,13 @@ export const callback = procedure
     }
 
     try {
-      const { accessToken, refreshToken } = await tokenAuthorizationCode({
+      const { data } = await tokenAuthorizationCode({
         code: input.code,
         codeVerifier: session.codeVerifier,
       });
 
-      session.accessToken = accessToken;
-      session.refreshToken = refreshToken;
+      session.accessToken = data.access_token;
+      session.refreshToken = data.refresh_token;
       await session.save();
 
       return { success: true };
