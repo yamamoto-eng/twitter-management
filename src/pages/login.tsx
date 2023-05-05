@@ -1,4 +1,5 @@
 import { trpc } from "@/utils/trpc";
+import { Button } from "@mui/material";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
@@ -12,8 +13,10 @@ const Login: NextPage = () => {
   };
 
   return (
-    <div>
-      <button onClick={login}>login</button>
+    <div style={{height: "100%", display:"flex", justifyContent: "center", alignItems: "center"}}>
+      <Button size="large" variant="contained" onClick={login}>
+        login
+      </Button>
     </div>
   );
 };
