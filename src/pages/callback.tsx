@@ -1,7 +1,8 @@
 import { GetServerSideProps, NextPage } from "next";
-import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
+import { useEffectOnce } from "react-use";
+import { useTwitterProfile } from "@/hooks/useTwitterProfile";
 
 type PageProps = {
   state: string;
@@ -11,25 +12,33 @@ type PageProps = {
 const Callback: NextPage<PageProps> = ({ state, code }) => {
   const router = useRouter();
   const { mutateAsync } = trpc.auth.callback.useMutation();
+  const { setTwitterProfile } = useTwitterProfile();
 
   const callback = async () => {
     try {
-      const { success } = await mutateAsync({ state, code });
-      if (success) {
-        router.push("/");
+      const data = await mutateAsync({ state, code });
+      if (data.success) {
+        setTwitterProfile({
+          isLogin: true,
+          name: data.name,
+          userName: data.userName,
+          image: data.image,
+        });
+
+        router.reload();
+
         return;
       }
 
-      router.push("/login");
+      router.replace("/login");
     } catch {}
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     callback();
-    // eslint-disable-next-line
-  }, []);
+  });
 
-  return <></>;
+  return <>Login...</>;
 };
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (ctx) => {
