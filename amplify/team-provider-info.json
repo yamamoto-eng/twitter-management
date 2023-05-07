@@ -17,6 +17,9 @@
           "appId": "d250u0sat172u3",
           "type": "cicd"
         }
+      },
+      "api": {
+        "twittermanagement": {}
       }
     }
   }
