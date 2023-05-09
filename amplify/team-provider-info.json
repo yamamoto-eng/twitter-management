@@ -17,6 +17,9 @@
           "appId": "dd5aov9jsyfnl",
           "type": "cicd"
         }
+      },
+      "api": {
+        "twittermanagement": {}
       }
     }
   }
