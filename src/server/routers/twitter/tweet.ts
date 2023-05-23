@@ -4,8 +4,8 @@ import { twitterApiV2 } from "@/server/services/twitterApiV2";
 import { DynamoDB, config } from "aws-sdk";
 
 config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.APP_AWS_SECRET_ACCESS_KEY,
   region: "ap-northeast-1",
 });
 
