@@ -19,6 +19,7 @@ const Index: NextPage = () => {
 
   return (
     <div>
+      test
       <button onClick={tweet}>tweet</button>
       <input id="tweet" value={text} onChange={(e) => setText(e.target.value)} />
     </div>
