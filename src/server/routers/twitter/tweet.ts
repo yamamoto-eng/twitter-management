@@ -25,7 +25,7 @@ export const tweet = procedure
     try {
       await docClient.put(putParams, function (err, data) {
         if (err) {
-          error = err;
+          throw err;
         } else {
         }
       });
