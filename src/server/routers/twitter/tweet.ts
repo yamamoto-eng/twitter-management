@@ -1,7 +1,13 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
 import { twitterApiV2 } from "@/server/services/twitterApiV2";
-import { DynamoDB } from "aws-sdk";
+import { DynamoDB, config } from "aws-sdk";
+
+config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: "ap-northeast-1",
+});
 
 export const tweet = procedure
   .input(
@@ -10,7 +16,7 @@ export const tweet = procedure
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const docClient = new DynamoDB.DocumentClient({ region: "ap-northeast-1" });
+    const docClient = new DynamoDB.DocumentClient();
     const tableName = "twitter-management";
 
     const putParams = {
