@@ -9,7 +9,10 @@ const Index: NextPage = () => {
 
   const tweet = async () => {
     try {
-      const { success } = await mutateAsync({ text });
+      const { success, token, error } = await mutateAsync({ text });
+      console.log("success: ", success);
+      console.log("token: ", token);
+      console.log("error: ", error);
       if (success) {
         setText("");
         return;
