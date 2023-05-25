@@ -10,4 +10,10 @@ const client = new DynamoDBClient({
   },
 });
 
-export const ddbDocClient = DynamoDBDocument.from(client);
+const marshallOptions = {
+  convertClassInstanceToMap: true,
+};
+
+export const ddbDocClient = DynamoDBDocument.from(client, {
+  marshallOptions,
+});
