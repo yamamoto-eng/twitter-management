@@ -1,4 +1,4 @@
-import { twitter } from "@/constants";
+import { twitterConfig } from "@/constants";
 
 type Props = {
   state: string;
@@ -8,8 +8,8 @@ type Props = {
 export const authorize = ({ state, codeChallenge }: Props) => {
   const params = new URLSearchParams({
     response_type: "code",
-    client_id: twitter.clientId,
-    redirect_uri: twitter.redirectUri,
+    client_id: twitterConfig.clientId,
+    redirect_uri: twitterConfig.redirectUri,
     scope: "tweet.read users.read tweet.write offline.access",
     state,
     code_challenge: codeChallenge,
