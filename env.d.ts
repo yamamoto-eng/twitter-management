@@ -10,5 +10,6 @@ declare namespace NodeJS {
       CALLBACK_URL: string;
       APP_AWS_ACCESS_KEY_ID: string;
       APP_AWS_SECRET_ACCESS_KEY: string;
+      ENCRYPTION_KEY: string;
     }> {}
 }

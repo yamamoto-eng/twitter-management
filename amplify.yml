@@ -19,6 +19,7 @@ frontend:
         - echo "COOKIE_NAME=$COOKIE_NAME" >> .env
         - echo "APP_AWS_ACCESS_KEY_ID=$APP_AWS_ACCESS_KEY_ID" >> .env
         - echo "APP_AWS_SECRET_ACCESS_KEY=$APP_AWS_SECRET_ACCESS_KEY" >> .env
+        - echo "ENCRYPTION_KEY=$ENCRYPTION_KEY" >> .env
         - yarn run build
   artifacts:
     baseDirectory: .next

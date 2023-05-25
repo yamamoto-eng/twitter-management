@@ -42,3 +42,30 @@ export const twitterApiV2 = async <T>(ctx: Context, api: (client: TwitterApiV2) 
     throw e;
   }
 };
+
+class TwitterApiV2WithToken {
+  private readonly config;
+
+  constructor(accessToken: string) {
+    this.config = new Configuration({
+      accessToken,
+    });
+  }
+
+  get users() {
+    return new UsersApi(this.config);
+  }
+
+  get tweets() {
+    return new TweetsApi(this.config);
+  }
+}
+
+export const twitterApiV2WithToken = async <T>(
+  accessToken: string,
+  api: (client: TwitterApiV2WithToken) => T
+): Promise<T> => {
+  const client = new TwitterApiV2WithToken(accessToken);
+
+  return await api(client);
+};

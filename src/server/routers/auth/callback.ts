@@ -1,9 +1,9 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
 import { tokenAuthorizationCode } from "@/server/services/tokenAuthorizationCode";
-import { twitterApiV2 } from "@/server/services/twitterApiV2";
-import { tokenRevoke } from "@/server/services/tokenRevoke";
-import { twitter } from "@/constants";
+import { twitterApiV2WithToken } from "@/server/services/twitterApiV2";
+import { twitterConfig } from "@/constants";
+import { userAuthRepository } from "@/server/db/userAuthRepository";
 
 export const callback = procedure
   .input(
@@ -39,26 +39,31 @@ export const callback = procedure
         codeVerifier: ctx.session.codeVerifier,
       });
 
-      ctx.session.accessToken = access_token;
-      ctx.session.refreshToken = refresh_token;
-      await ctx.session.save();
-
       const userFields = new Set<"profile_image_url">(["profile_image_url"]);
-      const { data } = await twitterApiV2(ctx, (client) => client.users.findMyUser(userFields));
+      const {
+        data: { data },
+      } = await twitterApiV2WithToken(access_token, (client) => client.users.findMyUser(userFields));
 
-      const { data: userData } = data;
-
-      if (!userData) {
-        await tokenRevoke({ accessToken: access_token });
-        await ctx.session.destroy();
+      if (!data) {
         return { success: false };
       }
 
+      ctx.session.accessToken = access_token;
+      ctx.session.refreshToken = refresh_token;
+      ctx.session.id = data.id;
+      await ctx.session.save();
+
+      await userAuthRepository().createUserAuth({
+        id: data.id,
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+
       return {
         success: true,
-        name: userData.name,
-        userName: userData.username,
-        image: userData.profile_image_url ?? twitter.defaultImage,
+        name: data.name,
+        userName: data.username,
+        image: data.profile_image_url ?? twitterConfig.defaultImage,
       };
     } catch (e) {
       return { success: false };

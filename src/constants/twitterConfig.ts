@@ -1,4 +1,4 @@
-export const twitter = {
+export const twitterConfig = {
   clientId: process.env.CLIENT_ID,
   secretId: process.env.CLIENT_SECRET,
   redirectUri: process.env.CALLBACK_URL,
