@@ -1,7 +1,7 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
 import { tokenAuthorizationCode } from "@/server/services/tokenAuthorizationCode";
-import { TwitterApiV2 } from "@/server/services/twitterApiV2";
+import { TwitterApiV2 } from "@/server/utils";
 import { twitterConfig } from "@/constants";
 import { credentialsRepository } from "@/server/db/credentialsRepository";
 

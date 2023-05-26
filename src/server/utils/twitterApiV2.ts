@@ -1,6 +1,6 @@
 import { UsersApi, Configuration, TweetsApi } from "@/api-client/twitter-v2";
 import { isAxiosError } from "axios";
-import { tokenRefresh } from "./tokenRefresh";
+import { tokenRefresh } from "../services/tokenRefresh";
 import { credentialsRepository } from "../db/credentialsRepository";
 
 export class TwitterApiV2 {
