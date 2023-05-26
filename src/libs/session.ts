@@ -15,8 +15,6 @@ export const sessionOptions: IronSessionOptions = {
 
 declare module "iron-session" {
   interface IronSessionData {
-    accessToken: string;
-    refreshToken: string;
     id: string;
     state: string;
     codeVerifier: string;

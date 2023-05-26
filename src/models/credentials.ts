@@ -1,4 +1,4 @@
-type UserAuth = {
+type Credentials = {
   id: string;
   accessToken: string;
   refreshToken: string;

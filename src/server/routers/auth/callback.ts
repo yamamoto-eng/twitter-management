@@ -1,9 +1,9 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
 import { tokenAuthorizationCode } from "@/server/services/tokenAuthorizationCode";
-import { twitterApiV2WithToken } from "@/server/services/twitterApiV2";
+import { TwitterApiV2 } from "@/server/services/twitterApiV2";
 import { twitterConfig } from "@/constants";
-import { userAuthRepository } from "@/server/db/userAuthRepository";
+import { credentialsRepository } from "@/server/db/credentialsRepository";
 
 export const callback = procedure
   .input(
@@ -40,20 +40,19 @@ export const callback = procedure
       });
 
       const userFields = new Set<"profile_image_url">(["profile_image_url"]);
+      const client = new TwitterApiV2(access_token);
       const {
         data: { data },
-      } = await twitterApiV2WithToken(access_token, (client) => client.users.findMyUser(userFields));
+      } = await client.users.findMyUser(userFields);
 
       if (!data) {
         return { success: false };
       }
 
-      ctx.session.accessToken = access_token;
-      ctx.session.refreshToken = refresh_token;
       ctx.session.id = data.id;
       await ctx.session.save();
 
-      await userAuthRepository().createUserAuth({
+      await credentialsRepository().createCredentials({
         id: data.id,
         accessToken: access_token,
         refreshToken: refresh_token,

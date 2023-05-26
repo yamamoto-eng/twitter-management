@@ -2,15 +2,15 @@ import { decrypt, encrypt } from "@/server/utils/encryption";
 import { ddbDocClient } from "./ddbClient";
 import { awsConfig } from "@/constants";
 
-export const userAuthRepository = () => {
-  const createUserAuth = async ({
+export const credentialsRepository = () => {
+  const createCredentials = async ({
     id,
     accessToken,
     refreshToken,
-  }: Pick<UserAuth, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
+  }: Pick<Credentials, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
     const currentDate = new Date().toISOString();
 
-    const item: UserAuth = {
+    const item: Credentials = {
       id,
       accessToken: encrypt(accessToken),
       refreshToken: encrypt(refreshToken),
@@ -30,7 +30,7 @@ export const userAuthRepository = () => {
     }
   };
 
-  const readUserAuth = async ({ id }: Pick<UserAuth, "id">): Promise<UserAuth> => {
+  const readCredentials = async ({ id }: Pick<Credentials, "id">): Promise<Credentials> => {
     try {
       const res = await ddbDocClient.get({
         TableName: awsConfig.tableName,
@@ -39,25 +39,25 @@ export const userAuthRepository = () => {
         },
       });
 
-      const userAuth = res.Item as UserAuth;
+      const credentials = res.Item as Credentials;
 
       return {
-        id: userAuth.id,
-        accessToken: decrypt(userAuth.accessToken),
-        refreshToken: decrypt(userAuth.refreshToken),
-        createdAt: userAuth.createdAt,
-        updatedAt: userAuth.updatedAt,
+        id: credentials.id,
+        accessToken: decrypt(credentials.accessToken),
+        refreshToken: decrypt(credentials.refreshToken),
+        createdAt: credentials.createdAt,
+        updatedAt: credentials.updatedAt,
       };
     } catch (e) {
       throw e;
     }
   };
 
-  const updateUserAuth = async ({
+  const updateCredentials = async ({
     id,
     accessToken,
     refreshToken,
-  }: Pick<UserAuth, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
+  }: Pick<Credentials, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
     const currentDate = new Date().toISOString();
 
     try {
@@ -85,7 +85,7 @@ export const userAuthRepository = () => {
     }
   };
 
-  const deleteUserAuth = async ({ id }: Pick<UserAuth, "id">): Promise<unknown> => {
+  const deleteCredentials = async ({ id }: Pick<Credentials, "id">): Promise<unknown> => {
     try {
       await ddbDocClient.delete({
         TableName: awsConfig.tableName,
@@ -101,9 +101,9 @@ export const userAuthRepository = () => {
   };
 
   return {
-    createUserAuth,
-    readUserAuth,
-    updateUserAuth,
-    deleteUserAuth,
+    createCredentials,
+    readCredentials,
+    updateCredentials,
+    deleteCredentials,
   };
 };

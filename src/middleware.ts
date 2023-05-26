@@ -10,7 +10,7 @@ export const config = {
 export const middleware = async (req: NextRequest) => {
   const res = NextResponse.next();
   const session = await getIronSession(req, res, sessionOptions);
-  const isAuth = !!session.accessToken;
+  const isAuth = !!session.id;
 
   if (req.nextUrl.pathname.startsWith("/callback")) {
     if (isAuth) return NextResponse.redirect(new URL("/", req.url));
