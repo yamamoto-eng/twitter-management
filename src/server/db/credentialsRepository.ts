@@ -30,7 +30,7 @@ export const credentialsRepository = () => {
     }
   };
 
-  const readCredentials = async ({ id }: Pick<Credentials, "id">): Promise<Credentials> => {
+  const readCredentials = async ({ id }: Pick<Credentials, "id">): Promise<Credentials | undefined> => {
     try {
       const res = await ddbDocClient.get({
         TableName: awsConfig.tableName,
@@ -38,6 +38,10 @@ export const credentialsRepository = () => {
           id,
         },
       });
+
+      if (!res.Item) {
+        return undefined;
+      }
 
       const credentials = res.Item as Credentials;
 
@@ -49,6 +53,7 @@ export const credentialsRepository = () => {
         updatedAt: credentials.updatedAt,
       };
     } catch (e) {
+      console.log("error", e);
       throw e;
     }
   };

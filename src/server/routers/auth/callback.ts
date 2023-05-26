@@ -49,14 +49,22 @@ export const callback = procedure
         return { success: false };
       }
 
+      const { createCredentials, readCredentials, updateCredentials } = credentialsRepository();
+
+      const credentials = await readCredentials({ id: data.id });
+
+      if (!credentials) {
+        await createCredentials({
+          id: data.id,
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      } else {
+        await updateCredentials(credentials);
+      }
+
       ctx.session.id = data.id;
       await ctx.session.save();
-
-      await credentialsRepository().createCredentials({
-        id: data.id,
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
 
       return {
         success: true,
