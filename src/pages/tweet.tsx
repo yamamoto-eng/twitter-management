@@ -1,15 +1,15 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
-const Index: NextPage = () => {
+const Page: NextPage = () => {
   const router = useRouter();
 
   return (
     <div>
-      home
-      <button onClick={() => router.push("/tweet")}>go to tweet</button>
+      tweet
+      <button onClick={() => router.push("/")}>go to home</button>
     </div>
   );
 };
 
-export default Index;
+export default Page;
