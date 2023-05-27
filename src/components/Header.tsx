@@ -1,19 +1,19 @@
 import { AppBar, Avatar, Box, Button, IconButton, Toolbar, Typography } from "@mui/material";
 import { Menu } from "@mui/icons-material";
-import { useTwitterProfile } from "@/hooks/useTwitterProfile";
+import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 
 export const Header = () => {
   const router = useRouter();
-  const { twitterProfile, setTwitterProfile } = useTwitterProfile();
+  const { userInfo, setUserInfo } = useUserInfoWithStorage();
   const { mutateAsync } = trpc.auth.logout.useMutation();
 
   const logout = async () => {
     const { success } = await mutateAsync();
     if (success) {
-      setTwitterProfile({ isLogin: false });
-      router.reload();
+      setUserInfo({ isLogin: false });
+      router.replace("/login");
     }
   };
 
@@ -21,7 +21,7 @@ export const Header = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          {twitterProfile?.isLogin && (
+          {userInfo?.isLogin && (
             <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
               <Menu />
             </IconButton>
@@ -30,13 +30,13 @@ export const Header = () => {
             TM
           </Typography>
 
-          {twitterProfile?.isLogin && (
+          {userInfo?.isLogin && (
             <>
               <div>
-                <Typography>{twitterProfile.name}</Typography>
-                <Typography>{`@${twitterProfile.userName}`}</Typography>
+                <Typography>{userInfo.name}</Typography>
+                <Typography>{`@${userInfo.userName}`}</Typography>
               </div>
-              <Avatar src={twitterProfile.image} />
+              <Avatar src={userInfo.image} />
               <Button color="inherit" onClick={logout}>
                 Logout
               </Button>

@@ -9,11 +9,11 @@ const Login: NextPage = () => {
 
   const login = async () => {
     const res = await mutateAsync();
-    router.push(res.authorizeURL);
+    router.replace(res.authorizeURL);
   };
 
   return (
-    <div style={{height: "100%", display:"flex", justifyContent: "center", alignItems: "center"}}>
+    <div style={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
       <Button size="large" variant="contained" onClick={login}>
         login
       </Button>

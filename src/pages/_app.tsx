@@ -1,14 +1,41 @@
 import { Layout } from "@/components/Layout";
 import "@/styles/globals.css";
 import { trpc } from "@/utils/trpc";
+import { getIronSession } from "iron-session";
 import { AppType } from "next/app";
+import { NextPageContext } from "next/dist/shared/lib/utils";
+import { sessionOptions } from "@/libs/session";
+import React from "react";
+import { RecoilRoot } from "recoil";
 
-const App: AppType = ({ Component, pageProps }) => {
+type Props = {};
+
+const App: AppType<Props> = ({ Component, pageProps }) => {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <RecoilRoot>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </RecoilRoot>
   );
 };
 
-export default trpc.withTRPC(App);
+const AppWithTRPC = trpc.withTRPC(App);
+
+AppWithTRPC.getInitialProps = async (props): Promise<{ pageProps: Props }> => {
+  // HACK: withTRPCでラップすると内部構造が変わる
+  const ctx = (props as any).ctx as NextPageContext;
+  const { req, res } = ctx;
+
+  let pageProps = {};
+
+  if (req && res) {
+    await getIronSession(req, res, sessionOptions);
+  }
+
+  return {
+    pageProps,
+  };
+};
+
+export default AppWithTRPC;

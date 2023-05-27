@@ -2,7 +2,7 @@ import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useEffectOnce } from "react-use";
-import { useTwitterProfile } from "@/hooks/useTwitterProfile";
+import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
 
 type PageProps = {
   state: string;
@@ -12,20 +12,20 @@ type PageProps = {
 const Callback: NextPage<PageProps> = ({ state, code }) => {
   const router = useRouter();
   const { mutateAsync } = trpc.auth.callback.useMutation();
-  const { setTwitterProfile } = useTwitterProfile();
+  const { setUserInfo } = useUserInfoWithStorage();
 
   const callback = async () => {
     try {
       const data = await mutateAsync({ state, code });
       if (data.success) {
-        setTwitterProfile({
+        setUserInfo({
           isLogin: true,
           name: data.name,
           userName: data.userName,
           image: data.image,
         });
 
-        router.reload();
+        router.replace("/");
 
         return;
       }
