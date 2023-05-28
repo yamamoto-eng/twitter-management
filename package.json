@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "swagger": "docker run -p 80:8080 -e SWAGGER_JSON=/local/twitter-api-v2.json -v $(pwd)/docs/openapi:/local swaggerapi/swagger-ui",
-    "generate:twitter-api": "docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/docs/openapi/twitter-api-v2.json -g typescript-axios -o /local/src/api-client/twitter-v2"
+    "generate:twitter-api": "docker run --rm -v \"${PWD}:/local\" openapitools/openapi-generator-cli generate -i /local/docs/openapi/twitter-api-v2.json -g typescript-axios -o /local/src/api-client/twitter-v2",
+    "cfn:dynamodb:deploy": "aws cloudformation deploy --template-file ./template/dynamodb.yml --stack-name twitter-management-dynamodb",
+    "deploy:lambda": "bash ./deployLambda.sh"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.337.0",
@@ -38,5 +40,8 @@
     "superjson": "^1.12.3",
     "typescript": "5.0.3",
     "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "esbuild": "^0.17.19"
   }
 }

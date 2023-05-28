@@ -1,0 +1,22 @@
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      RoleName: twitter_management_lambda_role
+
+  LambdaTweetFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: ../dist/lambda
+      FunctionName: twitter-management-tweet
+      Handler: tweet.tweet
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: nodejs18.x
