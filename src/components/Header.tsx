@@ -1,17 +1,23 @@
-import { AppBar, Avatar, Box, Button, IconButton, Toolbar, Typography } from "@mui/material";
-import { Menu } from "@mui/icons-material";
+import { AppBar, Avatar, Box, Button, Toolbar, Typography } from "@mui/material";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { PAGES } from "@/constants";
+import { FC } from "react";
 
-export const Header = () => {
+export const Header: FC = () => {
   const router = useRouter();
   const { userInfo, setUserInfo } = useUserInfoWithStorage();
-  const { mutateAsync } = trpc.auth.logout.useMutation();
+  const { mutateAsync: loginMutateAsync } = trpc.auth.login.useMutation();
+  const { mutateAsync: logoutMutateAsync } = trpc.auth.logout.useMutation();
+
+  const login = async () => {
+    const { authorizeURL } = await loginMutateAsync();
+    router.replace(authorizeURL);
+  };
 
   const logout = async () => {
-    const { success } = await mutateAsync();
+    const { success } = await logoutMutateAsync();
     if (success) {
       setUserInfo({ isLogin: false });
       router.replace(PAGES.LOGIN);
@@ -20,18 +26,21 @@ export const Header = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
-          {userInfo?.isLogin && (
-            <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-              <Menu />
-            </IconButton>
-          )}
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            TM
+          <Typography component="div" sx={{ flexGrow: 1 }}>
+            <Button color="inherit" onClick={() => router.push(PAGES.HOME)}>
+              TM
+            </Button>
           </Typography>
 
-          {userInfo?.isLogin && (
+          {!userInfo.isLogin && (
+            <Button color="inherit" onClick={login}>
+              Login
+            </Button>
+          )}
+
+          {userInfo.isLogin && (
             <>
               <div>
                 <Typography>{userInfo.name}</Typography>

@@ -1,14 +1,9 @@
-import { PAGES } from "@/constants";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 
 const Page: NextPage = () => {
-  const router = useRouter();
-
   return (
     <div>
-      tweet
-      <button onClick={() => router.push(PAGES.HOME)}>go to home</button>
+      <h1>Tweet</h1>
     </div>
   );
 };
