@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useEffectOnce } from "react-use";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
+import { PAGES } from "@/constants";
 
 type PageProps = {
   state: string;
@@ -25,12 +26,12 @@ const Callback: NextPage<PageProps> = ({ state, code }) => {
           image: data.image,
         });
 
-        router.replace("/");
+        router.replace(PAGES.HOME);
 
         return;
       }
 
-      router.replace("/login");
+      router.replace(PAGES.LOGIN);
     } catch {}
   };
 

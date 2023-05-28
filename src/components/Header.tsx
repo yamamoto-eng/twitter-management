@@ -3,6 +3,7 @@ import { Menu } from "@mui/icons-material";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
+import { PAGES } from "@/constants";
 
 export const Header = () => {
   const router = useRouter();
@@ -13,7 +14,7 @@ export const Header = () => {
     const { success } = await mutateAsync();
     if (success) {
       setUserInfo({ isLogin: false });
-      router.replace("/login");
+      router.replace(PAGES.LOGIN);
     }
   };
 

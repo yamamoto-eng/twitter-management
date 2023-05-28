@@ -1,3 +1,4 @@
+import { PAGES } from "@/constants";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
@@ -7,7 +8,7 @@ const Index: NextPage = () => {
   return (
     <div>
       home
-      <button onClick={() => router.push("/tweet")}>go to tweet</button>
+      <button onClick={() => router.push(PAGES.TWEET)}>go to tweet</button>
     </div>
   );
 };

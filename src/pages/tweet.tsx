@@ -1,3 +1,4 @@
+import { PAGES } from "@/constants";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
@@ -7,7 +8,7 @@ const Page: NextPage = () => {
   return (
     <div>
       tweet
-      <button onClick={() => router.push("/")}>go to home</button>
+      <button onClick={() => router.push(PAGES.HOME)}>go to home</button>
     </div>
   );
 };
