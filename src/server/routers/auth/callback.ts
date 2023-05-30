@@ -53,14 +53,16 @@ export const callback = procedure
 
       const credentials = await readCredentials({ id: data.id });
 
+      const newCredentials = {
+        id: data.id,
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      };
+
       if (!credentials) {
-        await createCredentials({
-          id: data.id,
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
+        await createCredentials(newCredentials);
       } else {
-        await updateCredentials(credentials);
+        await updateCredentials(newCredentials);
       }
 
       ctx.session.id = data.id;
