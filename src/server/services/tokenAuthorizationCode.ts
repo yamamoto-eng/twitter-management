@@ -1,4 +1,4 @@
-import { twitterConfig } from "@/constants";
+import { TWITTER_CONFIG } from "@/constants";
 import { auth } from "@/server/utils";
 import axios, { AxiosResponse } from "axios";
 
@@ -20,8 +20,8 @@ export const tokenAuthorizationCode = async ({ code, codeVerifier }: Props): Pro
     "https://api.twitter.com/2/oauth2/token",
     {
       grant_type: "authorization_code",
-      client_id: twitterConfig.clientId,
-      redirect_uri: twitterConfig.redirectUri,
+      client_id: TWITTER_CONFIG.CLIENT_ID,
+      redirect_uri: TWITTER_CONFIG.REDIRECT_URL,
       code: code,
       code_verifier: codeVerifier,
     },

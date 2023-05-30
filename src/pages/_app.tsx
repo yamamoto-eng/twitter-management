@@ -4,7 +4,7 @@ import { trpc } from "@/utils/trpc";
 import { getIronSession } from "iron-session";
 import { AppType } from "next/app";
 import { NextPageContext } from "next/dist/shared/lib/utils";
-import { sessionOptions } from "@/libs/session";
+import { sessionOptions } from "@/libs";
 import React from "react";
 import { RecoilRoot } from "recoil";
 

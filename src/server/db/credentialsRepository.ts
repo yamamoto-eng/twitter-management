@@ -1,6 +1,7 @@
-import { decrypt, encrypt } from "@/server/utils/encryption";
-import { ddbDocClient } from "./ddbClient";
-import { awsConfig } from "@/constants";
+import { decrypt, encrypt } from "@/server/utils";
+import { ddbDocClient } from "../../libs";
+import { AWS_CONFIG } from "@/constants";
+import { Credentials } from "@/models";
 
 export const credentialsRepository = () => {
   const createCredentials = async ({
@@ -20,7 +21,7 @@ export const credentialsRepository = () => {
 
     try {
       await ddbDocClient.put({
-        TableName: awsConfig.tableName,
+        TableName: AWS_CONFIG.TABLE_NAME,
         Item: item,
       });
 
@@ -33,7 +34,7 @@ export const credentialsRepository = () => {
   const readCredentials = async ({ id }: Pick<Credentials, "id">): Promise<Credentials | undefined> => {
     try {
       const res = await ddbDocClient.get({
-        TableName: awsConfig.tableName,
+        TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
           id,
         },
@@ -67,7 +68,7 @@ export const credentialsRepository = () => {
 
     try {
       await ddbDocClient.update({
-        TableName: awsConfig.tableName,
+        TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
           id,
         },
@@ -93,7 +94,7 @@ export const credentialsRepository = () => {
   const deleteCredentials = async ({ id }: Pick<Credentials, "id">): Promise<unknown> => {
     try {
       await ddbDocClient.delete({
-        TableName: awsConfig.tableName,
+        TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
           id,
         },

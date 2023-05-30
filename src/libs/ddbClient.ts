@@ -1,12 +1,12 @@
-import { awsConfig } from "@/constants";
+import { AWS_CONFIG } from "@/constants";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({
-  region: awsConfig.region,
+  region: AWS_CONFIG.REGION,
   credentials: {
-    accessKeyId: process.env.APP_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.APP_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: AWS_CONFIG.ACCESS_KEY_ID,
+    secretAccessKey: AWS_CONFIG.SECRET_ACCESS_KEY_ID,
   },
 });
 

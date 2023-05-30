@@ -1,4 +1,4 @@
-type Credentials = {
+export type Credentials = {
   id: string;
   accessToken: string;
   refreshToken: string;

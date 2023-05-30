@@ -1,7 +1,7 @@
 import { getIronSession } from "iron-session/edge";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { sessionOptions } from "./libs/session";
+import { sessionOptions } from "./libs";
 import { PAGES } from "./constants";
 
 export const config = {

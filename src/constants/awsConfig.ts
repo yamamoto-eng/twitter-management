@@ -1,6 +1,6 @@
-export const awsConfig = {
-  region: "ap-northeast-1",
-  accessKeyId: process.env.APP_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.APP_AWS_SECRET_ACCESS_KEY,
-  tableName: "twitter-management",
+export const AWS_CONFIG = {
+  REGION: "ap-northeast-1",
+  ACCESS_KEY_ID: process.env.APP_AWS_ACCESS_KEY_ID,
+  SECRET_ACCESS_KEY_ID: process.env.APP_AWS_SECRET_ACCESS_KEY,
+  TABLE_NAME: "twitter-management",
 };

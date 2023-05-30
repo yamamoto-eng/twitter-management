@@ -1,6 +1,6 @@
 import { procedure } from "../../trpc";
 import { generators } from "openid-client";
-import { authorize } from "@/server/services/authorize";
+import { authorize } from "@/server/services";
 
 export const login = procedure.mutation(async ({ ctx }) => {
   const state = generators.state();

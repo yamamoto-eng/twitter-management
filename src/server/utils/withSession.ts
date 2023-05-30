@@ -1,4 +1,4 @@
-import { sessionOptions } from "@/libs/session";
+import { sessionOptions } from "@/libs";
 import { withIronSessionApiRoute, withIronSessionSsr } from "iron-session/next";
 import { GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler } from "next";
 

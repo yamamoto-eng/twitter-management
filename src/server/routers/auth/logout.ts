@@ -1,6 +1,6 @@
 import { procedure } from "@/server/trpc";
-import { tokenRevoke } from "@/server/services/tokenRevoke";
-import { credentialsRepository } from "@/server/db/credentialsRepository";
+import { tokenRevoke } from "@/server/services";
+import { credentialsRepository } from "@/server/db";
 
 export const logout = procedure.mutation(async ({ ctx }) => {
   try {

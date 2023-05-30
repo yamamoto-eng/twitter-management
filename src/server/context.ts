@@ -1,4 +1,4 @@
-import { sessionOptions } from "@/libs/session";
+import { sessionOptions } from "@/libs";
 import { inferAsyncReturnType } from "@trpc/server";
 import { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getIronSession } from "iron-session";

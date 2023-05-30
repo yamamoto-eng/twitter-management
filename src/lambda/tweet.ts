@@ -1,3 +1,4 @@
+import { Credentials } from "@/models";
 import { twitterApiV2 } from "@/server/utils";
 
 type Event = {

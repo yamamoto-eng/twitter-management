@@ -1,7 +1,8 @@
 import { UsersApi, Configuration, TweetsApi } from "@/api-client/twitter-v2";
 import { isAxiosError } from "axios";
-import { tokenRefresh } from "../services/tokenRefresh";
-import { credentialsRepository } from "../db/credentialsRepository";
+import { tokenRefresh } from "../services";
+import { credentialsRepository } from "../db";
+import { Credentials } from "@/models";
 
 export class TwitterApiV2 {
   private readonly config;

@@ -1,9 +1,9 @@
 import { procedure } from "@/server/trpc";
 import { z } from "zod";
-import { tokenAuthorizationCode } from "@/server/services/tokenAuthorizationCode";
+import { tokenAuthorizationCode } from "@/server/services";
 import { TwitterApiV2 } from "@/server/utils";
-import { twitterConfig } from "@/constants";
-import { credentialsRepository } from "@/server/db/credentialsRepository";
+import { TWITTER_CONFIG } from "@/constants";
+import { credentialsRepository } from "@/server/db";
 
 export const callback = procedure
   .input(
@@ -70,7 +70,7 @@ export const callback = procedure
         success: true,
         name: data.name,
         userName: data.username,
-        image: data.profile_image_url ?? twitterConfig.defaultImage,
+        image: data.profile_image_url ?? TWITTER_CONFIG.DEFAULT_IMAGE,
       };
     } catch (e) {
       return { success: false };
