@@ -22,10 +22,14 @@ export class TwitterApiV2 {
   }
 }
 
-export const twitterApiV2 = async <T>(
-  credentials: Pick<Credentials, "id" | "accessToken" | "refreshToken">,
-  api: (client: TwitterApiV2) => T
-): Promise<T> => {
+export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: TwitterApiV2) => T): Promise<T> => {
+  const { readCredentials } = credentialsRepository();
+  const credentials = await readCredentials({ id });
+
+  if (!credentials) {
+    throw new Error("Credentials not found");
+  }
+
   const client = new TwitterApiV2(credentials.accessToken);
 
   try {

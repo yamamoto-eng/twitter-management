@@ -1,14 +1,9 @@
-import { Credentials } from "@/models";
 import { twitterApiV2 } from "@/server/utils";
+import { TweetLambdaEvent } from "@/types/lambdaEvent";
 
-type Event = {
-  credentials: Credentials;
-  text: string;
-};
-
-export const tweet = async (event: Event) => {
+export const tweet = async ({ id, text }: TweetLambdaEvent) => {
   try {
-    await twitterApiV2(event.credentials, (client) => client.tweets.createTweet({ text: event.text }));
+    await twitterApiV2(id, (client) => client.tweets.createTweet({ text }));
   } catch (e) {
     throw e;
   }
