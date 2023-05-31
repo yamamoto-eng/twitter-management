@@ -20,3 +20,10 @@ Resources:
       Handler: tweet.tweet
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs18.x
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaTweetFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com

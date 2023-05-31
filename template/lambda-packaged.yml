@@ -16,7 +16,7 @@ Resources:
     Properties:
       Code:
         S3Bucket: twitter-management-lambda
-        S3Key: f31f61bfb6cc42c14a1f871aa1aa2888
+        S3Key: 0260e929edc5e9ea010c861b0bc36579
       FunctionName: twitter-management-tweet
       Handler: tweet.tweet
       Role:
@@ -24,3 +24,12 @@ Resources:
         - LambdaRole
         - Arn
       Runtime: nodejs18.x
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+        - LambdaTweetFunction
+        - Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
