@@ -23,7 +23,7 @@ export class TwitterApiV2 {
 }
 
 export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: TwitterApiV2) => T): Promise<T> => {
-  const { readCredentials } = credentialsRepository();
+  const { readCredentials, updateCredentials } = credentialsRepository();
   const credentials = await readCredentials({ id });
 
   if (!credentials) {
@@ -41,7 +41,7 @@ export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: Twitt
           data: { access_token, refresh_token },
         } = await tokenRefresh({ refreshToken: credentials.refreshToken });
 
-        await credentialsRepository().updateCredentials({
+        await updateCredentials({
           id: credentials.id,
           accessToken: access_token,
           refreshToken: refresh_token,

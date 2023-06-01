@@ -1,3 +1,15 @@
+Parameters:
+  CLIENTID:
+    Type: String
+  CLIENTSECRET:
+    Type: String
+  ENCRYPTIONKEY:
+    Type: String
+  APPAWSACCESSKEYID:
+    Type: String
+  APPAWSSECRETACCESSKEY:
+    Type: String
+
 Resources:
   LambdaRole:
     Type: AWS::IAM::Role
@@ -21,6 +33,13 @@ Resources:
       Handler: tweet.tweet
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs18.x
+      Environment:
+        Variables:
+          CLIENT_ID: !Ref CLIENTID
+          CLIENT_SECRET: !Ref CLIENTSECRET
+          ENCRYPTION_KEY: !Ref ENCRYPTIONKEY
+          APP_AWS_ACCESS_KEY_ID: !Ref APPAWSACCESSKEYID
+          APP_AWS_SECRET_ACCESS_KEY: !Ref APPAWSSECRETACCESSKEY
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
