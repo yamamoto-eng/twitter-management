@@ -14,6 +14,7 @@ import { Create } from "@mui/icons-material";
 import { Footer } from "./Footer";
 import { useRouter } from "next/router";
 import { PAGES } from "@/constants";
+import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
 
 const drawerWidth = 240;
 
@@ -21,29 +22,31 @@ export const Layout: FC<PropsWithChildren> = (props) => {
   const { children } = props;
 
   const router = useRouter();
+  const { userInfo } = useUserInfoWithStorage();
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
       <CssBaseline />
       <Header />
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ overflow: "auto" }}>
-          <List>
-            <Item label="Tweet" icon={<Create />} onClick={() => router.push(PAGES.TWEET)} />
-          </List>
-          <Divider />
-        </Box>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, width: "100%" }}>
-        <Toolbar />
+      {userInfo.isLogin && (
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
+          }}
+        >
+          <Toolbar />
+          <Box sx={{ overflow: "auto" }}>
+            <List>
+              <Item label="Tweet" icon={<Create />} onClick={() => router.push(PAGES.TWEET)} />
+            </List>
+            <Divider />
+          </Box>
+        </Drawer>
+      )}
+      <Box component="main" sx={{ flexGrow: 1, p: 10, width: "100%", marginTop: "64px" }}>
         {children}
       </Box>
     </Box>
