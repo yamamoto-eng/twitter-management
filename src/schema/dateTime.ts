@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const time = z.object({
+  min: z.number(),
+  hour: z.number(),
+});
+
 export const dayOfWeek = z.union([
   z.literal("SUN"),
   z.literal("MON"),
@@ -10,4 +15,5 @@ export const dayOfWeek = z.union([
   z.literal("SAT"),
 ]);
 
+export type Time = z.infer<typeof time>;
 export type DayOfWeek = z.infer<typeof dayOfWeek>;
