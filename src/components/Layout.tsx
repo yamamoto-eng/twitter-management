@@ -46,7 +46,7 @@ export const Layout: FC<PropsWithChildren> = (props) => {
           </Box>
         </Drawer>
       )}
-      <Box component="main" sx={{ flexGrow: 1, p: 10, width: "100%", marginTop: "64px" }}>
+      <Box component="main" sx={{ p: 10, width: "100%", marginTop: "64px", overflow: "auto" }}>
         {children}
       </Box>
     </Box>
