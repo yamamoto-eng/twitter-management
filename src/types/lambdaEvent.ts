@@ -4,3 +4,5 @@ export type TweetLambdaEvent = {
   id: Credentials["id"];
   text: string;
 };
+
+export type LambdaEvent = TweetLambdaEvent;
