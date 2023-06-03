@@ -7,6 +7,10 @@ import { NextPageContext } from "next/dist/shared/lib/utils";
 import { sessionOptions } from "@/libs";
 import React from "react";
 import { RecoilRoot } from "recoil";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 type Props = {};
 

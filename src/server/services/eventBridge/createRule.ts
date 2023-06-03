@@ -1,19 +1,20 @@
 import { ebClient } from "@/libs";
-import { DayOfWeek, Time } from "@/schema/dateTime";
 import { PutRuleCommand } from "@aws-sdk/client-eventbridge";
+import dayjs from "dayjs";
 
 type Args = {
   id: string;
-  time: Time;
-  dayOfWeek: DayOfWeek;
+  date: dayjs.Dayjs;
 };
 
 export const createRule = (args: Args) => {
-  const { id, time, dayOfWeek } = args;
+  const { id, date } = args;
+
+  const utcDate = date.utc();
 
   const putRuleCommand = new PutRuleCommand({
     Name: id,
-    ScheduleExpression: `cron(${time.min} ${time.hour} ? * ${dayOfWeek} *)`,
+    ScheduleExpression: `cron(${utcDate.minute()} ${utcDate.hour()} ? * ${utcDate.day() + 1} *)`,
   });
 
   return ebClient.send(putRuleCommand);
