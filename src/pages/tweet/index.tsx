@@ -18,6 +18,10 @@ const Page: NextPage = () => {
     let fromDate = fromTime.day(dayOfWeek);
     let toDate = toTime.day(dayOfWeek);
 
+    if (fromDate.isAfter(toDate)) {
+      toDate = toDate.add(1, "day");
+    }
+
     if (fromDate.isBefore(dayjs())) {
       fromDate = fromDate.add(7, "day");
       toDate = toDate.add(7, "day");
@@ -25,7 +29,6 @@ const Page: NextPage = () => {
 
     try {
       const res = await mutateAsync({
-        dayOfWeek,
         fromDate: fromDate.toDate(),
         toDate: toDate.toDate(),
         text,
