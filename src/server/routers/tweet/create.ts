@@ -1,5 +1,5 @@
 import { procedure } from "../../trpc";
-import { credentialsRepository } from "@/server/db";
+import { credentialsRepository, tweetRepository } from "@/server/db";
 import { createTarget } from "@/server/services/eventBridge/createTarget";
 import { v4 } from "uuid";
 import { createRule } from "@/server/services/eventBridge/createRule";
@@ -16,6 +16,7 @@ export const create = procedure
   .mutation(async ({ ctx, input }) => {
     const uuid = v4();
     const { readCredentials } = credentialsRepository();
+    const { addTweet } = tweetRepository();
     const { date } = createRandomDateInRange(dayjs(input.fromDate), dayjs(input.toDate));
 
     const credentials = await readCredentials({ id: ctx.session.id });
@@ -32,6 +33,17 @@ export const create = procedure
 
     await createRule({ id: uuid, date });
     await createTarget({ id: uuid, event, arn: arn });
+
+    await addTweet({
+      id: credentials.id,
+      tweet: {
+        id: uuid,
+        text: input.text,
+        fromDate: input.fromDate.toISOString(),
+        toDate: input.toDate.toISOString(),
+        isEnabled: true,
+      },
+    });
 
     return { date: date.toDate() };
   });
