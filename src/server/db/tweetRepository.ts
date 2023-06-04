@@ -20,24 +20,30 @@ export const tweetRepository = () => {
     });
   };
 
+  const readTweetList = async ({ id }: { id: Credentials["id"] }) => {
+    try {
+      const res = await ddbDocClient.get({
+        TableName: AWS_CONFIG.TABLE_NAME,
+        Key: {
+          id,
+        },
+        ProjectionExpression: "tweetList",
+      });
+
+      if (!res.Item) {
+        return undefined;
+      }
+
+      const tweetList = res.Item.tweetList as Tweet[];
+
+      return { tweetList };
+    } catch (e) {
+      throw e;
+    }
+  };
+
   return {
     addTweet,
+    readTweetList,
   };
 };
-
-// UpdateExpression: "set #list = list_append(#list, :newItem)"
-
-// UpdateExpression: "set #l = list_append(#l, :newItem)", // list属性に新しいアイテムを追加
-// ExpressionAttributeNames: {
-//   "#l": "list", // 更新する属性の名前
-// },
-// ExpressionAttributeValues: {
-//   ":newItem": [
-//     {
-//       id: "ITEM_ID",
-//       date: (new Date()).toISOString(), // 日付をISO形式の文字列に変換
-//       isEnabled: true // あるいはfalse
-//     },
-//     // 必要に応じて他の要素を追加
-//   ], // 追加する新しいアイテム
-// },

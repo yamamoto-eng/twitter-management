@@ -39,6 +39,7 @@ export const credentialsRepository = () => {
         Key: {
           id,
         },
+        ProjectionExpression: "id, accessToken, refreshToken, createdAt, updatedAt",
       });
 
       if (!res.Item) {
@@ -55,7 +56,6 @@ export const credentialsRepository = () => {
         updatedAt: credentials.updatedAt,
       };
     } catch (e) {
-      console.log("error", e);
       throw e;
     }
   };
