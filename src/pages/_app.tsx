@@ -9,8 +9,10 @@ import React from "react";
 import { RecoilRoot } from "recoil";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import "dayjs/locale/ja";
 
 dayjs.extend(utc);
+dayjs.locale("ja");
 
 type Props = {};
 
