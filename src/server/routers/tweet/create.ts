@@ -1,5 +1,5 @@
 import { procedure } from "../../trpc";
-import { credentialsRepository, tweetRepository } from "@/server/db";
+import { tweetRepository } from "@/server/db";
 import { createTarget } from "@/server/services/eventBridge/createTarget";
 import { v4 } from "uuid";
 import { createRule } from "@/server/services/eventBridge/createRule";
@@ -15,15 +15,13 @@ export const create = procedure
   .output(output)
   .mutation(async ({ ctx, input }) => {
     const uuid = v4();
-    const { readCredentials } = credentialsRepository();
     const { addTweet } = tweetRepository();
     const { date } = createRandomDateInRange(dayjs(input.fromDate), dayjs(input.toDate));
 
-    const credentials = await readCredentials({ id: ctx.session.id });
     const { arn } = await getArn({ functionName: AWS_CONFIG.LAMBDA_FUNCTION_NAME.TWEET });
 
-    if (!credentials || !arn) {
-      throw new Error("Credentials or ARN not found");
+    if (!arn) {
+      throw new Error("ARN not found");
     }
 
     const event: TweetLambdaEvent = {
@@ -35,7 +33,7 @@ export const create = procedure
     await createTarget({ id: uuid, event, arn: arn });
 
     await addTweet({
-      id: credentials.id,
+      id: ctx.session.id,
       tweet: {
         id: uuid,
         text: input.text,

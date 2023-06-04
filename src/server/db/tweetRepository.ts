@@ -34,9 +34,7 @@ export const tweetRepository = () => {
         return undefined;
       }
 
-      const tweetList = res.Item.tweetList as Tweet[];
-
-      return { tweetList };
+      return res.Item.tweetList as Tweet[];
     } catch (e) {
       throw e;
     }

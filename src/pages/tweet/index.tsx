@@ -8,6 +8,7 @@ import { DAY_OF_WEEK } from "@/constants";
 
 const Page: NextPage = () => {
   const { mutateAsync } = trpc.tweet.create.useMutation();
+  const { data } = trpc.tweet.list.useQuery();
 
   const [text, setText] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(DAY_OF_WEEK.MON);
@@ -94,6 +95,19 @@ const Page: NextPage = () => {
       <br />
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
       <button onClick={create}>作成</button>
+      <div>
+        <h2>Tweet List</h2>
+        {data?.tweetList.map((tweet) => (
+          <div key={tweet.id} style={{ margin: "20px 0" }}>
+            <p>Tweet内容: {tweet.text}</p>
+            <p>曜日: {dayjs(tweet.fromDate).format("dd")}</p>
+            <p>
+              時間: {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
+            </p>
+            <p>有効: {tweet.isEnabled ? "有効" : "無効"}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
