@@ -14,7 +14,7 @@ const Page: NextPage = () => {
 
   const [tweetList, setTweetList] = useState<Tweet[]>();
   const [text, setText] = useState("");
-  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(DAY_OF_WEEK.MON);
+  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(dayjs().day() as DayOfWeek);
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);

@@ -1,8 +1,7 @@
 import { procedure } from "../../trpc";
 import { tweetRepository } from "@/server/db";
-import { createTarget } from "@/server/services/eventBridge/createTarget";
+import { createRule, createTarget } from "@/server/services/eventBridge";
 import { v4 } from "uuid";
-import { createRule } from "@/server/services/eventBridge/createRule";
 import { input, output } from "@/schema/tweet/create";
 import { getArn } from "@/server/services/lambda/getArn";
 import { AWS_CONFIG } from "@/constants";
@@ -29,8 +28,8 @@ export const create = procedure
       text: input.text,
     };
 
-    await createRule({ id: uuid, date, isEnabled: input.isEnabled });
-    await createTarget({ id: uuid, event, arn: arn });
+    await createRule({ ebId: uuid, date, isEnabled: input.isEnabled });
+    await createTarget({ ebId: uuid, event, arn: arn });
 
     await addTweet({
       id: ctx.session.id,

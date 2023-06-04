@@ -3,19 +3,19 @@ import { PutRuleCommand } from "@aws-sdk/client-eventbridge";
 import dayjs from "dayjs";
 
 type Args = {
-  id: string;
+  ebId: string;
   date: dayjs.Dayjs;
   isEnabled: boolean;
 };
 
 export const createRule = (args: Args) => {
-  const { id, date, isEnabled } = args;
+  const { ebId, date, isEnabled } = args;
 
   const utcDate = date.utc();
   const state = isEnabled ? "ENABLED" : "DISABLED";
 
   const putRuleCommand = new PutRuleCommand({
-    Name: id,
+    Name: ebId,
     ScheduleExpression: `cron(${utcDate.minute()} ${utcDate.hour()} ? * ${utcDate.day() + 1} *)`,
     State: state,
   });
