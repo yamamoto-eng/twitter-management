@@ -2,21 +2,22 @@ import { decrypt, encrypt } from "@/server/utils";
 import { ddbDocClient } from "../../libs";
 import { AWS_CONFIG } from "@/constants";
 import { Credentials } from "@/models";
+import dayjs from "dayjs";
 
 export const credentialsRepository = () => {
+  const nowDate = dayjs().toISOString();
+
   const createCredentials = async ({
     id,
     accessToken,
     refreshToken,
   }: Pick<Credentials, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
-    const currentDate = new Date().toISOString();
-
     const item: Credentials = {
       id,
       accessToken: encrypt(accessToken),
       refreshToken: encrypt(refreshToken),
-      createdAt: currentDate,
-      updatedAt: currentDate,
+      createdAt: nowDate,
+      updatedAt: nowDate,
     };
 
     try {
@@ -64,7 +65,7 @@ export const credentialsRepository = () => {
     accessToken,
     refreshToken,
   }: Pick<Credentials, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
-    const currentDate = new Date().toISOString();
+    const nowDate = dayjs().toISOString();
 
     try {
       await ddbDocClient.update({
@@ -81,7 +82,7 @@ export const credentialsRepository = () => {
         ExpressionAttributeValues: {
           ":accessToken": encrypt(accessToken),
           ":refreshToken": encrypt(refreshToken),
-          ":updatedAt": currentDate,
+          ":updatedAt": nowDate,
         },
       });
 
