@@ -13,7 +13,7 @@ export const list = procedure.output(output).query(async ({ ctx, input }) => {
 
   const newList = tweetList.map((tweet) => {
     return {
-      id: tweet.id,
+      ebId: tweet.ebId,
       text: tweet.text,
       isEnabled: tweet.isEnabled,
       fromDate: dayjs(tweet.fromDate).toDate(),

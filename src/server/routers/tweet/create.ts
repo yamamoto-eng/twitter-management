@@ -35,7 +35,7 @@ export const create = procedure
     await addTweet({
       id: ctx.session.id,
       tweet: {
-        id: uuid,
+        ebId: uuid,
         text: input.text,
         fromDate: input.fromDate.toISOString(),
         toDate: input.toDate.toISOString(),

@@ -1,20 +1,27 @@
 import { trpc } from "@/utils";
 import { NextPage } from "next";
-import { Input, MenuItem, Select, Switch, TextField } from "@mui/material/";
+import { Button, Input, MenuItem, Select, Switch, TextField } from "@mui/material/";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DayOfWeek } from "@/schema/dateTime";
 import { DAY_OF_WEEK } from "@/constants";
+import { Tweet } from "@/schema/tweet";
 
 const Page: NextPage = () => {
   const { mutateAsync } = trpc.tweet.create.useMutation();
   const { data } = trpc.tweet.list.useQuery();
+  const { mutateAsync: deleteByIdMutateAsync } = trpc.tweet.deleteById.useMutation();
 
+  const [tweetList, setTweetList] = useState<Tweet[]>();
   const [text, setText] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(DAY_OF_WEEK.MON);
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
+
+  useEffect(() => {
+    setTweetList(data?.tweetList);
+  }, [data]);
 
   const create = async () => {
     let fromDate = fromTime.day(dayOfWeek);
@@ -41,6 +48,11 @@ const Page: NextPage = () => {
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const deleteById = async (id: string) => {
+    const { tweetList } = await deleteByIdMutateAsync({ ebId: id });
+    setTweetList(tweetList);
   };
 
   return (
@@ -97,14 +109,15 @@ const Page: NextPage = () => {
       <button onClick={create}>作成</button>
       <div>
         <h2>Tweet List</h2>
-        {data?.tweetList.map((tweet) => (
-          <div key={tweet.id} style={{ margin: "20px 0" }}>
+        {tweetList?.map((tweet) => (
+          <div key={tweet.ebId} style={{ margin: "20px 0" }}>
             <p>Tweet内容: {tweet.text}</p>
             <p>曜日: {dayjs(tweet.fromDate).format("dd")}</p>
             <p>
               時間: {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
             </p>
             <p>有効: {tweet.isEnabled ? "有効" : "無効"}</p>
+            <Button onClick={() => deleteById(tweet.ebId)}>削除</Button>
           </div>
         ))}
       </div>

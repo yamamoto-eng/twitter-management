@@ -31,17 +31,51 @@ export const tweetRepository = () => {
       });
 
       if (!res.Item) {
-        return undefined;
+        throw new Error("tweetList not found");
       }
 
-      return res.Item.tweetList as Tweet[];
+      return (res.Item.tweetList ?? []) as Tweet[];
     } catch (e) {
       throw e;
     }
   };
 
+  const deleteTweet = async ({ id, ebId }: { id: Credentials["id"]; ebId: string }) => {
+    const res = await ddbDocClient.get({
+      TableName: AWS_CONFIG.TABLE_NAME,
+      Key: {
+        id,
+      },
+      ProjectionExpression: "tweetList",
+    });
+
+    if (!res.Item) {
+      throw new Error("tweetList not found");
+    }
+
+    const tweetList = res.Item.tweetList as Tweet[];
+    const newList = tweetList.filter((tweet) => tweet.ebId !== ebId);
+
+    await ddbDocClient.update({
+      TableName: AWS_CONFIG.TABLE_NAME,
+      Key: {
+        id,
+      },
+      UpdateExpression: "SET #tl = :t",
+      ExpressionAttributeNames: {
+        "#tl": "tweetList",
+      },
+      ExpressionAttributeValues: {
+        ":t": newList,
+      },
+    });
+
+    return newList;
+  };
+
   return {
     addTweet,
     readTweetList,
+    deleteTweet,
   };
 };
