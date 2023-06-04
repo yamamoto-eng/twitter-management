@@ -1,6 +1,6 @@
 import { trpc } from "@/utils";
 import { NextPage } from "next";
-import { Input, MenuItem, Select, TextField } from "@mui/material/";
+import { Input, MenuItem, Select, Switch, TextField } from "@mui/material/";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { DayOfWeek } from "@/schema/dateTime";
@@ -13,6 +13,7 @@ const Page: NextPage = () => {
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(DAY_OF_WEEK.MON);
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
+  const [isEnabled, setIsEnabled] = useState(false);
 
   const create = async () => {
     let fromDate = fromTime.day(dayOfWeek);
@@ -32,6 +33,7 @@ const Page: NextPage = () => {
         fromDate: fromDate.toDate(),
         toDate: toDate.toDate(),
         text,
+        isEnabled,
       });
 
       console.log(res.date);
@@ -90,6 +92,7 @@ const Page: NextPage = () => {
         <MenuItem value={DAY_OF_WEEK.SAT}>土</MenuItem>
       </Select>
       <br />
+      <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
       <button onClick={create}>作成</button>
     </div>
   );

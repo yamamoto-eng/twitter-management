@@ -31,7 +31,7 @@ export const create = procedure
       text: input.text,
     };
 
-    await createRule({ id: uuid, date });
+    await createRule({ id: uuid, date, isEnabled: input.isEnabled });
     await createTarget({ id: uuid, event, arn: arn });
 
     await addTweet({
@@ -41,7 +41,7 @@ export const create = procedure
         text: input.text,
         fromDate: input.fromDate.toISOString(),
         toDate: input.toDate.toISOString(),
-        isEnabled: true,
+        isEnabled: input.isEnabled,
       },
     });
 
