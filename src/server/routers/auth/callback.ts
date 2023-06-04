@@ -1,31 +1,13 @@
 import { procedure } from "@/server/trpc";
-import { z } from "zod";
 import { tokenAuthorizationCode } from "@/server/services";
 import { TwitterApiV2 } from "@/server/utils";
 import { TWITTER_CONFIG } from "@/constants";
 import { credentialsRepository } from "@/server/db";
+import { input, output } from "@/schema/auth";
 
 export const callback = procedure
-  .input(
-    z.object({
-      state: z.string(),
-      code: z.string(),
-    })
-  )
-  .output(
-    z
-      .object({
-        success: z.literal(true),
-        name: z.string(),
-        userName: z.string(),
-        image: z.string(),
-      })
-      .or(
-        z.object({
-          success: z.literal(false),
-        })
-      )
-  )
+  .input(input)
+  .output(output)
   .mutation(async ({ ctx, input }) => {
     if (ctx.session.state !== input.state) {
       return { success: false };
