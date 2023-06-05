@@ -1,6 +1,19 @@
 import { trpc } from "@/utils";
 import { NextPage } from "next";
-import { Button, Input, MenuItem, Select, Switch, TextField } from "@mui/material/";
+import {
+  Button,
+  Input,
+  MenuItem,
+  Select,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+} from "@mui/material/";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { DayOfWeek } from "@/schema/dateTime";
@@ -107,20 +120,43 @@ const Page: NextPage = () => {
       <br />
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
       <button onClick={create}>作成</button>
-      <div>
-        <h2>Tweet List</h2>
-        {tweetList?.map((tweet) => (
-          <div key={tweet.ebId} style={{ margin: "20px 0" }}>
-            <p>Tweet内容: {tweet.text}</p>
-            <p>曜日: {dayjs(tweet.fromDate).format("dd")}</p>
-            <p>
-              時間: {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
-            </p>
-            <p>有効: {tweet.isEnabled ? "有効" : "無効"}</p>
-            <Button onClick={() => deleteById(tweet.ebId)}>削除</Button>
-          </div>
-        ))}
-      </div>
+      <h2>Tweet List</h2>
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">投稿内容</TableCell>
+              <TableCell align="center" width={80}>
+                曜日
+              </TableCell>
+              <TableCell align="center" width={120}>
+                時間帯
+              </TableCell>
+              <TableCell align="center" width={120}>
+                ステータス
+              </TableCell>
+              <TableCell align="center" width={10}></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tweetList?.map((tweet) => (
+              <TableRow key={tweet.ebId} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableCell component="th" scope="tweet">
+                  {tweet.text}
+                </TableCell>
+                <TableCell align="center">{dayjs(tweet.fromDate).format("dd")}</TableCell>
+                <TableCell align="center">
+                  {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
+                </TableCell>
+                <TableCell align="center">{tweet.isEnabled ? "有効" : "無効"}</TableCell>
+                <TableCell align="center">
+                  <Button onClick={() => deleteById(tweet.ebId)}>削除</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
