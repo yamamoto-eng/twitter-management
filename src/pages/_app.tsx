@@ -10,6 +10,7 @@ import { RecoilRoot } from "recoil";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ja";
+import { SnackbarProvider } from "notistack";
 
 dayjs.extend(utc);
 dayjs.locale("ja");
@@ -19,9 +20,11 @@ type Props = {};
 const App: AppType<Props> = ({ Component, pageProps }) => {
   return (
     <RecoilRoot>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <SnackbarProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </SnackbarProvider>
     </RecoilRoot>
   );
 };

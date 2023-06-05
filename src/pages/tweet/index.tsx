@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { DayOfWeek } from "@/schema/dateTime";
 import { DAY_OF_WEEK } from "@/constants";
 import { Tweet } from "@/schema/tweet";
+import { aleat } from "@/utils/alert";
 
 const Page: NextPage = () => {
   const { mutateAsync } = trpc.tweet.create.useMutation();
@@ -60,6 +61,7 @@ const Page: NextPage = () => {
       });
 
       setTweetList((prev) => [...prev, tweet]);
+      aleat("Tweetを作成しました");
     } catch (e) {
       console.log(e);
     }
@@ -68,6 +70,7 @@ const Page: NextPage = () => {
   const deleteById = async (id: string) => {
     const { tweetList } = await deleteByIdMutateAsync({ ebId: id });
     setTweetList(tweetList);
+    aleat("Tweetを削除しました");
   };
 
   return (
