@@ -3,9 +3,9 @@ import { tweetRepository } from "@/server/db";
 import { output } from "@/schema/tweet/list";
 import dayjs from "dayjs";
 
-export const list = procedure.output(output).query(async ({ ctx, input }) => {
-  const { readTweetList } = tweetRepository();
-  const tweetList = await readTweetList({ id: ctx.session.id });
+export const list = procedure.output(output).query(async ({ ctx }) => {
+  const { readTweetList } = tweetRepository(ctx.session.id);
+  const tweetList = await readTweetList();
 
   if (!tweetList) {
     throw new Error("tweetList not found");

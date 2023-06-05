@@ -4,36 +4,26 @@ import { AWS_CONFIG } from "@/constants";
 import { Credentials } from "@/models";
 import dayjs from "dayjs";
 
-export const credentialsRepository = () => {
+export const credentialsRepository = (id: Credentials["id"]) => {
   const nowDate = dayjs().toISOString();
 
-  const createCredentials = async ({
-    id,
-    accessToken,
-    refreshToken,
-  }: Pick<Credentials, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
-    const item: Credentials = {
-      id,
-      accessToken: encrypt(accessToken),
-      refreshToken: encrypt(refreshToken),
-      createdAt: nowDate,
-      updatedAt: nowDate,
-    };
+  return {
+    createCredentials: (accessToken: Credentials["accessToken"], refreshToken: Credentials["refreshToken"]) => {
+      const item: Credentials = {
+        id,
+        accessToken: encrypt(accessToken),
+        refreshToken: encrypt(refreshToken),
+        createdAt: nowDate,
+        updatedAt: nowDate,
+      };
 
-    try {
-      await ddbDocClient.put({
+      return ddbDocClient.put({
         TableName: AWS_CONFIG.TABLE_NAME,
         Item: item,
       });
+    },
 
-      return;
-    } catch (e) {
-      throw e;
-    }
-  };
-
-  const readCredentials = async ({ id }: Pick<Credentials, "id">): Promise<Credentials | undefined> => {
-    try {
+    readCredentials: async (): Promise<Credentials> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
@@ -43,7 +33,7 @@ export const credentialsRepository = () => {
       });
 
       if (!res.Item) {
-        return undefined;
+        throw new Error("Credentials not found");
       }
 
       const credentials = res.Item as Credentials;
@@ -55,20 +45,12 @@ export const credentialsRepository = () => {
         createdAt: credentials.createdAt,
         updatedAt: credentials.updatedAt,
       };
-    } catch (e) {
-      throw e;
-    }
-  };
+    },
 
-  const updateCredentials = async ({
-    id,
-    accessToken,
-    refreshToken,
-  }: Pick<Credentials, "id" | "accessToken" | "refreshToken">): Promise<unknown> => {
-    const nowDate = dayjs().toISOString();
+    updateCredentials: (accessToken: Credentials["accessToken"], refreshToken: Credentials["refreshToken"]) => {
+      const nowDate = dayjs().toISOString();
 
-    try {
-      await ddbDocClient.update({
+      return ddbDocClient.update({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
           id,
@@ -85,32 +67,15 @@ export const credentialsRepository = () => {
           ":updatedAt": nowDate,
         },
       });
+    },
 
-      return;
-    } catch (e) {
-      throw e;
-    }
-  };
-
-  const deleteCredentials = async ({ id }: Pick<Credentials, "id">): Promise<unknown> => {
-    try {
-      await ddbDocClient.delete({
+    deleteCredentials: () => {
+      return ddbDocClient.delete({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
           id,
         },
       });
-
-      return;
-    } catch (e) {
-      throw e;
-    }
-  };
-
-  return {
-    createCredentials,
-    readCredentials,
-    updateCredentials,
-    deleteCredentials,
+    },
   };
 };

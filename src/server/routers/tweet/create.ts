@@ -14,7 +14,7 @@ export const create = procedure
   .output(output)
   .mutation(async ({ ctx, input }) => {
     const uuid = v4();
-    const { addTweet } = tweetRepository();
+    const { addTweet } = tweetRepository(ctx.session.id);
     const { date } = createRandomDateInRange(dayjs(input.fromDate), dayjs(input.toDate));
 
     const { arn } = await getArn({ functionName: AWS_CONFIG.LAMBDA_FUNCTION_NAME.TWEET });
@@ -32,14 +32,11 @@ export const create = procedure
     await createTarget({ ebId: uuid, event, arn: arn });
 
     await addTweet({
-      id: ctx.session.id,
-      tweet: {
-        ebId: uuid,
-        text: input.text,
-        fromDate: input.fromDate.toISOString(),
-        toDate: input.toDate.toISOString(),
-        isEnabled: input.isEnabled,
-      },
+      ebId: uuid,
+      text: input.text,
+      fromDate: input.fromDate.toISOString(),
+      toDate: input.toDate.toISOString(),
+      isEnabled: input.isEnabled,
     });
 
     const tweet = {

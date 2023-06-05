@@ -8,12 +8,12 @@ export const deleteById = procedure
   .input(input)
   .output(output)
   .mutation(async ({ ctx, input }) => {
-    const { deleteTweet } = tweetRepository();
+    const { deleteTweet } = tweetRepository(ctx.session.id);
 
     await deleteTarget({ ebId: input.ebId });
     await deleteRule({ ebId: input.ebId });
 
-    const tweetList = await deleteTweet({ id: ctx.session.id, ebId: input.ebId });
+    const tweetList = await deleteTweet(input.ebId);
     const newTweetList = tweetList.map((tweet) => {
       return {
         ebId: tweet.ebId,

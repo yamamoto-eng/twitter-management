@@ -23,8 +23,9 @@ export class TwitterApiV2 {
 }
 
 export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: TwitterApiV2) => T): Promise<T> => {
-  const { readCredentials, updateCredentials } = credentialsRepository();
-  const credentials = await readCredentials({ id });
+  const { readCredentials, updateCredentials } = credentialsRepository(id);
+
+  const credentials = await readCredentials();
 
   if (!credentials) {
     throw new Error("Credentials not found");
@@ -41,11 +42,7 @@ export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: Twitt
           data: { access_token, refresh_token },
         } = await tokenRefresh({ refreshToken: credentials.refreshToken });
 
-        await updateCredentials({
-          id: credentials.id,
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
+        await updateCredentials(access_token, refresh_token);
 
         const client = new TwitterApiV2(access_token);
         return await api(client);

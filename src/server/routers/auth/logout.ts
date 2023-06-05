@@ -3,8 +3,10 @@ import { tokenRevoke } from "@/server/services";
 import { credentialsRepository } from "@/server/db";
 
 export const logout = procedure.mutation(async ({ ctx }) => {
+  const { readCredentials } = credentialsRepository(ctx.session.id);
+
   try {
-    const credentials = await credentialsRepository().readCredentials({ id: ctx.session.id });
+    const credentials = await readCredentials();
 
     if (!credentials) {
       return { success: false };
