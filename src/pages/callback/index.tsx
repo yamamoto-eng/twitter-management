@@ -4,6 +4,7 @@ import { trpc } from "@/utils/trpc";
 import { useEffectOnce } from "react-use";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
 import { PAGES } from "@/constants";
+import { notification } from "@/utils/notification";
 
 type PageProps = {
   state: string;
@@ -26,6 +27,7 @@ const Callback: NextPage<PageProps> = ({ state, code }) => {
           image: data.image,
         });
 
+        notification("ログインしました");
         router.replace(PAGES.HOME);
 
         return;

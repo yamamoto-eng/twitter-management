@@ -2,7 +2,7 @@ import { enqueueSnackbar } from "notistack";
 
 type Args = Parameters<typeof enqueueSnackbar>;
 
-export const aleat = (...args: Args) => {
+export const notification = (...args: Args) => {
   const [message, options] = args;
   enqueueSnackbar(message, {
     variant: "success",

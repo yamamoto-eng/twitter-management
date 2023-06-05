@@ -4,6 +4,7 @@ import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { PAGES } from "@/constants";
 import { FC } from "react";
+import { notification } from "@/utils/notification";
 
 export const Header: FC = () => {
   const router = useRouter();
@@ -20,6 +21,7 @@ export const Header: FC = () => {
     const { success } = await logoutMutateAsync();
     if (success) {
       setUserInfo({ isLogin: false });
+      notification("ログアウトしました");
       router.replace(PAGES.LOGIN);
     }
   };
