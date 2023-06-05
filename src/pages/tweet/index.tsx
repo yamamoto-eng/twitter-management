@@ -25,7 +25,7 @@ const Page: NextPage = () => {
   const { data } = trpc.tweet.list.useQuery();
   const { mutateAsync: deleteByIdMutateAsync } = trpc.tweet.deleteById.useMutation();
 
-  const [tweetList, setTweetList] = useState<Tweet[]>();
+  const [tweetList, setTweetList] = useState<Tweet[]>([]);
   const [text, setText] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(dayjs().day() as DayOfWeek);
   const [fromTime, setFromTime] = useState(dayjs());
@@ -33,7 +33,9 @@ const Page: NextPage = () => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   useEffect(() => {
-    setTweetList(data?.tweetList);
+    if (data) {
+      setTweetList(data.tweetList);
+    }
   }, [data]);
 
   const create = async () => {
@@ -50,14 +52,14 @@ const Page: NextPage = () => {
     }
 
     try {
-      const res = await mutateAsync({
+      const { tweet } = await mutateAsync({
         fromDate: fromDate.toDate(),
         toDate: toDate.toDate(),
         text,
         isEnabled,
       });
 
-      console.log(res.date);
+      setTweetList((prev) => [...prev, tweet]);
     } catch (e) {
       console.log(e);
     }

@@ -42,5 +42,13 @@ export const create = procedure
       },
     });
 
-    return { date: date.toDate() };
+    const tweet = {
+      ebId: uuid,
+      text: input.text,
+      fromDate: input.fromDate,
+      toDate: input.toDate,
+      isEnabled: input.isEnabled,
+    };
+
+    return { tweet };
   });
