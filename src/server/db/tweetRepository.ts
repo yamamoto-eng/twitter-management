@@ -21,7 +21,7 @@ export const tweetRepository = (id: Credentials["id"]) => {
       });
     },
 
-    readTweetList: async (): Promise<Tweet> => {
+    readTweetList: async (): Promise<Tweet[]> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
