@@ -1,5 +1,5 @@
 import { trpc } from "@/utils";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import {
   Button,
   Input,
@@ -15,15 +15,20 @@ import {
   TextField,
 } from "@mui/material/";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DayOfWeek } from "@/schema/dateTime";
 import { DAY_OF_WEEK } from "@/constants";
 import { Tweet } from "@/schema/tweet";
 import { notification } from "@/utils/notification";
+import { useEffectOnce } from "react-use";
+import { trpcHelper } from "@/server/routers/_app";
 
-const Page: NextPage = () => {
+type Props = {
+  tweetList: Tweet[];
+};
+
+const Page: NextPage<Props> = (props) => {
   const { mutateAsync } = trpc.tweet.create.useMutation();
-  const { data } = trpc.tweet.list.useQuery();
   const { mutateAsync: deleteByIdMutateAsync } = trpc.tweet.deleteById.useMutation();
 
   const [tweetList, setTweetList] = useState<Tweet[]>([]);
@@ -33,11 +38,9 @@ const Page: NextPage = () => {
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
 
-  useEffect(() => {
-    if (data) {
-      setTweetList(data.tweetList);
-    }
-  }, [data]);
+  useEffectOnce(() => {
+    setTweetList(props.tweetList);
+  });
 
   const create = async () => {
     let fromDate = fromTime.day(dayOfWeek);
@@ -89,7 +92,6 @@ const Page: NextPage = () => {
         type="time"
         value={fromTime.format("HH:mm")}
         onChange={(e) => {
-          console.log(e.currentTarget.value);
           const [hour, min] = e.currentTarget.value.split(":");
           setFromTime((prev) => prev.hour(Number(hour)).minute(Number(min)));
         }}
@@ -164,6 +166,13 @@ const Page: NextPage = () => {
       </TableContainer>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
+  const helpers = await trpcHelper(ctx);
+  const { tweetList } = await helpers.tweet.list.fetch();
+
+  return { props: { tweetList } };
 };
 
 export default Page;

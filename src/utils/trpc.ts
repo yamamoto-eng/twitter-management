@@ -24,7 +24,6 @@ export const trpc = createTRPCNext<AppRouter>({
             refetchOnWindowFocus: false,
             retry: false,
             // TODO: useErrorBoundary
-            // TODO: suspense
           },
           mutations: {
             retry: false,
