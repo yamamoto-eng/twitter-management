@@ -21,6 +21,29 @@ export const tweetRepository = (id: Credentials["id"]) => {
       });
     },
 
+    readTweetById: async (ebId: string): Promise<Tweet> => {
+      const res = await ddbDocClient.get({
+        TableName: AWS_CONFIG.TABLE_NAME,
+        Key: {
+          id,
+        },
+        ProjectionExpression: "tweetList",
+      });
+
+      if (!res.Item) {
+        throw new Error("tweetList not found");
+      }
+
+      const tweetList: Tweet[] = res.Item.tweetList ?? [];
+      const tweet = tweetList.find((tweet) => tweet.ebId === ebId);
+
+      if (!tweet) {
+        throw new Error("tweet not found");
+      }
+
+      return tweet;
+    },
+
     readTweetList: async (): Promise<Tweet[]> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
