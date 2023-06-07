@@ -28,7 +28,7 @@ Resources:
   LambdaTweetFunction:
     Type: AWS::Lambda::Function
     Properties:
-      Code: ../dist/lambda
+      Code: ../lambda/bundle
       FunctionName: twitter-management-tweet
       Handler: tweet.tweet
       Role: !GetAtt LambdaRole.Arn
