@@ -2,7 +2,9 @@ import { trpc } from "@/utils";
 import { GetServerSideProps, NextPage } from "next";
 import {
   Button,
+  FormControl,
   Input,
+  InputLabel,
   MenuItem,
   Select,
   Switch,
@@ -12,12 +14,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Divider,
   TextField,
 } from "@mui/material/";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { DayOfWeek } from "@/schema/dateTime";
-import { DAY_OF_WEEK } from "@/constants";
+import { DateInterval } from "@/schema/dateTime";
+import { DATE_INTERVAL, DATE_INTERVAL_LABEL } from "@/constants";
 import { Tweet } from "@/schema/tweet";
 import { notification } from "@/utils/notification";
 import { useEffectOnce } from "react-use";
@@ -33,7 +36,7 @@ const Page: NextPage<Props> = (props) => {
 
   const [tweetList, setTweetList] = useState<Tweet[]>([]);
   const [text, setText] = useState("");
-  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek>(dayjs().day() as DayOfWeek);
+  const [dateInterval, setDateInterval] = useState<DateInterval>(DATE_INTERVAL.DAY_ONE);
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
@@ -43,26 +46,14 @@ const Page: NextPage<Props> = (props) => {
   });
 
   const create = async () => {
-    let fromDate = fromTime.day(dayOfWeek);
-    let toDate = toTime.day(dayOfWeek);
-
-    if (fromDate.isAfter(toDate)) {
-      toDate = toDate.add(1, "day");
-    }
-
-    if (fromDate.isBefore(dayjs())) {
-      fromDate = fromDate.add(7, "day");
-      toDate = toDate.add(7, "day");
-    }
-
     try {
       const { tweet } = await mutateAsync({
-        fromDate: fromDate.toDate(),
-        toDate: toDate.toDate(),
+        fromTime: fromTime.toDate(),
+        toTime: toTime.toDate(),
         text,
         isEnabled,
+        dateInterval,
       });
-
       setTweetList((prev) => [...prev, tweet]);
       notification("Tweetを作成しました");
     } catch (e) {
@@ -106,27 +97,33 @@ const Page: NextPage<Props> = (props) => {
         }}
       />
       <br />
-      <Select
-        value={dayOfWeek}
-        label="曜日"
-        onChange={(e) => {
-          const value = e.target.value;
-          if (typeof value === "number") {
-            setDayOfWeek(value);
-          }
-        }}
-      >
-        <MenuItem value={DAY_OF_WEEK.SUM}>日</MenuItem>
-        <MenuItem value={DAY_OF_WEEK.MON}>月</MenuItem>
-        <MenuItem value={DAY_OF_WEEK.TUE}>火</MenuItem>
-        <MenuItem value={DAY_OF_WEEK.WED}>水</MenuItem>
-        <MenuItem value={DAY_OF_WEEK.THU}>木</MenuItem>
-        <MenuItem value={DAY_OF_WEEK.FRI}>金</MenuItem>
-        <MenuItem value={DAY_OF_WEEK.SAT}>土</MenuItem>
-      </Select>
+      <FormControl sx={{ margin: 3 }}>
+        <InputLabel id="date-interval">頻度</InputLabel>
+        <Select
+          labelId="date-interval"
+          id="date-interval"
+          value={dateInterval}
+          label="頻度"
+          onChange={(e) => {
+            const value = e.target.value;
+            if (typeof value === "number") {
+              setDateInterval(value);
+            }
+          }}
+        >
+          {Object.values(DATE_INTERVAL).map((value, index) => (
+            <MenuItem key={index} value={value}>
+              {DATE_INTERVAL_LABEL[value]}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <br />
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
-      <button onClick={create}>作成</button>
+      <Button onClick={create} variant="contained">
+        作成
+      </Button>
+      <Divider sx={{ marginTop: 3, marginBottom: 10 }} />
       <h2>Tweet List</h2>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
