@@ -1,4 +1,4 @@
-import { FC, MouseEvent, PropsWithChildren, ReactNode } from "react";
+import { ComponentProps, FC, PropsWithChildren, ReactNode } from "react";
 import { Header } from "./Header";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -12,16 +12,15 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Create } from "@mui/icons-material";
 import { Footer } from "./Footer";
-import { useRouter } from "next/router";
 import { PAGES } from "@/constants";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
+import Link from "next/link";
 
 const drawerWidth = 240;
 
 export const Layout: FC<PropsWithChildren> = (props) => {
   const { children } = props;
 
-  const router = useRouter();
   const { userInfo } = useUserInfoWithStorage();
 
   return (
@@ -40,7 +39,7 @@ export const Layout: FC<PropsWithChildren> = (props) => {
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
             <List>
-              <Item label="Tweet" icon={<Create />} onClick={() => router.push(PAGES.TWEET)} />
+              <Item href={PAGES.TWEET} label="Tweet" icon={<Create />} />
             </List>
             <Divider />
           </Box>
@@ -56,16 +55,18 @@ export const Layout: FC<PropsWithChildren> = (props) => {
 type ItemProps = {
   label: string;
   icon: ReactNode;
-  onClick: (e: MouseEvent<HTMLLIElement>) => void;
+  href: ComponentProps<typeof Link>["href"];
 };
 
-const Item: FC<ItemProps> = ({ label, icon, onClick }) => {
+const Item: FC<ItemProps> = ({ label, icon, href }) => {
   return (
-    <ListItem disablePadding onClick={onClick}>
-      <ListItemButton>
-        <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText primary={label} />
-      </ListItemButton>
-    </ListItem>
+    <Link href={href}>
+      <ListItem disablePadding>
+        <ListItemButton>
+          <ListItemIcon>{icon}</ListItemIcon>
+          <ListItemText primary={label} />
+        </ListItemButton>
+      </ListItem>
+    </Link>
   );
 };

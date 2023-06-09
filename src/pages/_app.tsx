@@ -11,6 +11,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ja";
 import { SnackbarProvider } from "notistack";
+import { Loading } from "@/components/Loading";
+import { useIsMutating } from "@tanstack/react-query";
 
 dayjs.extend(utc);
 dayjs.locale("ja");
@@ -18,9 +20,12 @@ dayjs.locale("ja");
 type Props = {};
 
 const App: AppType<Props> = ({ Component, pageProps }) => {
+  const isMutating = useIsMutating();
+
   return (
     <RecoilRoot>
       <SnackbarProvider>
+        {!!isMutating && <Loading />}
         <Layout>
           <Component {...pageProps} />
         </Layout>

@@ -35,9 +35,7 @@ const Page: NextPage<Props> = (props) => {
 
   const [tweetList, setTweetList] = useState<Tweet[]>([]);
   const [text, setText] = useState("");
-
   const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
-
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
