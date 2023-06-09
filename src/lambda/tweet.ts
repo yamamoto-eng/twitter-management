@@ -6,18 +6,20 @@ import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ja";
 import { tweetRepository } from "@/server/db";
 import { createRandomDateInRange } from "@/utils";
+import { createNextDateForTime } from "@/utils/createNextDateForTime";
 
 dayjs.extend(utc);
 dayjs.locale("ja");
 
 export const tweet = async (event: TweetLambdaEvent) => {
-  const { readTweetById } = tweetRepository(event.id);
+  const { readTweetById, updateTweet } = tweetRepository(event.id);
 
   const tweet = await readTweetById(event.ebId);
 
+  const { fromDate, toDate } = createNextDateForTime(dayjs(tweet.fromDate), dayjs(tweet.toDate), tweet.interval);
+  const { date } = createRandomDateInRange(fromDate, toDate);
+
   await twitterApiV2(event.id, (client) => client.tweets.createTweet({ text: tweet.text }));
-
-  const { date } = createRandomDateInRange(dayjs(tweet.fromDate), dayjs(tweet.toDate));
-
   await updateRule({ ebId: event.ebId, date });
+  await updateTweet({ ...tweet, fromDate: fromDate.toISOString(), toDate: toDate.toISOString() });
 };

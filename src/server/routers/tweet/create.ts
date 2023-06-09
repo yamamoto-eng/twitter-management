@@ -8,7 +8,7 @@ import { AWS_CONFIG } from "@/constants";
 import { TweetLambdaEvent } from "@/types/lambdaEvent";
 import dayjs from "dayjs";
 import { createRandomDateInRange } from "@/utils";
-import { Interval } from "@/schema/dateTime";
+import { createNextDateForTime } from "@/utils/createNextDateForTime";
 
 export const create = procedure
   .input(input)
@@ -16,7 +16,7 @@ export const create = procedure
   .mutation(async ({ ctx, input }) => {
     const uuid = v4();
 
-    const { fromDate, toDate } = createDate(dayjs(input.fromTime), dayjs(input.toTime), input.interval);
+    const { fromDate, toDate } = createNextDateForTime(dayjs(input.fromTime), dayjs(input.toTime), input.interval);
     const { date } = createRandomDateInRange(fromDate, toDate);
 
     const { addTweet } = tweetRepository(ctx.session.id);
@@ -54,30 +54,3 @@ export const create = procedure
       },
     };
   });
-
-const createDate = (fromTime: dayjs.Dayjs, toTime: dayjs.Dayjs, interval: Interval) => {
-  const now = dayjs();
-  const fromHour = fromTime.hour();
-  const fromMinute = fromTime.minute();
-  const toHour = toTime.hour();
-  const toMinute = toTime.minute();
-
-  let fromDate = now;
-  let toDate = now;
-
-  if (interval.type === "day") {
-    fromDate = now.hour(fromHour).minute(fromMinute).add(interval.day, "d");
-    toDate = now.hour(toHour).minute(toMinute).add(interval.day, "d");
-  }
-
-  if (interval.type === "dayOfWeek") {
-    fromDate = now.hour(fromHour).minute(fromMinute).day(interval.dayOfWeek);
-    toDate = now.hour(toHour).minute(toMinute).day(interval.dayOfWeek);
-  }
-
-  if (fromDate.isAfter(toDate)) {
-    toDate = toDate.add(1, "d");
-  }
-
-  return { fromDate, toDate };
-};

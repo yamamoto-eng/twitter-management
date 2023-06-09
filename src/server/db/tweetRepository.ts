@@ -60,6 +60,45 @@ export const tweetRepository = (id: Credentials["id"]) => {
       return res.Item.tweetList ?? [];
     },
 
+    updateTweet: async (tweet: Tweet): Promise<Tweet[]> => {
+      const res = await ddbDocClient.get({
+        TableName: AWS_CONFIG.TABLE_NAME,
+        Key: {
+          id,
+        },
+        ProjectionExpression: "tweetList",
+      });
+
+      if (!res.Item) {
+        throw new Error("tweetList not found");
+      }
+
+      const tweetList = (res.Item.tweetList ?? []) as Tweet[];
+      const index = tweetList.findIndex((item) => item.ebId === tweet.ebId);
+
+      if (index < 0) {
+        throw new Error("tweet not found");
+      }
+
+      const newTweetList = tweetList.map((item) => (item.ebId === tweet.ebId ? { ...item, ...tweet } : item));
+
+      await ddbDocClient.update({
+        TableName: AWS_CONFIG.TABLE_NAME,
+        Key: {
+          id,
+        },
+        UpdateExpression: "SET #tl = :t",
+        ExpressionAttributeNames: {
+          "#tl": "tweetList",
+        },
+        ExpressionAttributeValues: {
+          ":t": newTweetList,
+        },
+      });
+
+      return newTweetList;
+    },
+
     deleteTweet: async (ebId: string): Promise<Tweet[]> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
