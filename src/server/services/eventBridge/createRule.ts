@@ -16,7 +16,7 @@ export const createRule = (args: Args) => {
 
   const putRuleCommand = new PutRuleCommand({
     Name: ebId,
-    ScheduleExpression: `cron(${utcDate.minute()} ${utcDate.hour()} ? * ${utcDate.day() + 1} *)`,
+    ScheduleExpression: `cron(${utcDate.minute()} ${utcDate.hour()} ${utcDate.date()} * ? *)`,
     State: state,
   });
 

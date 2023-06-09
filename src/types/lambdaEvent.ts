@@ -2,7 +2,7 @@ import { Credentials } from "@/models";
 
 export type TweetLambdaEvent = {
   id: Credentials["id"];
-  text: string;
+  ebId: string;
 };
 
 export type LambdaEvent = TweetLambdaEvent;

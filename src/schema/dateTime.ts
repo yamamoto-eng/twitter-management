@@ -1,8 +1,16 @@
-import { DATE_INTERVAL, DAY_OF_WEEK } from "@/constants";
+import { DATE_TYPE, DAY, DAY_OF_WEEK } from "@/constants";
 import { z } from "zod";
 
-export const dayOfWeek = z.nativeEnum(DAY_OF_WEEK);
-export const dateInterval = z.nativeEnum(DATE_INTERVAL);
+const dayInterval = z.object({
+  type: z.literal(DATE_TYPE.DAY),
+  day: z.nativeEnum(DAY),
+});
 
-export type DayOfWeek = z.infer<typeof dayOfWeek>;
-export type DateInterval = z.infer<typeof dateInterval>;
+const dayOfWeekInterval = z.object({
+  type: z.literal(DATE_TYPE.DAY_OF_WEEK),
+  dayOfWeek: z.nativeEnum(DAY_OF_WEEK),
+});
+
+export const interval = z.union([dayInterval, dayOfWeekInterval]);
+
+export type Interval = z.infer<typeof interval>;

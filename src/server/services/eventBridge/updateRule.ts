@@ -4,18 +4,14 @@ import dayjs from "dayjs";
 
 type Args = {
   ebId: string;
-  date?: dayjs.Dayjs;
+  date: dayjs.Dayjs;
   isEnabled?: boolean;
 };
 
 export const updateRule = (args: Args) => {
   const { ebId, date, isEnabled } = args;
 
-  const getScheduleExpression = () => {
-    if (date === undefined) return undefined;
-    const utcDate = date.utc();
-    return `cron(${utcDate.minute()} ${utcDate.hour()} ? * ${utcDate.day() + 1} *)`;
-  };
+  const utcDate = date.utc();
 
   const getState = () => {
     if (isEnabled === undefined) return undefined;
@@ -24,7 +20,7 @@ export const updateRule = (args: Args) => {
 
   const putRuleCommand = new PutRuleCommand({
     Name: ebId,
-    ScheduleExpression: getScheduleExpression(),
+    ScheduleExpression: `cron(${utcDate.minute()} ${utcDate.hour()} ${utcDate.date()} * ? *)`,
     State: getState(),
   });
 

@@ -19,8 +19,8 @@ import {
 } from "@mui/material/";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { DateInterval } from "@/schema/dateTime";
-import { DATE_INTERVAL, DATE_INTERVAL_LABEL } from "@/constants";
+import { Interval } from "@/schema/dateTime";
+import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_LABEL, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
 import { Tweet } from "@/schema/tweet";
 import { notification } from "@/utils/notification";
 import { useEffectOnce } from "react-use";
@@ -36,7 +36,9 @@ const Page: NextPage<Props> = (props) => {
 
   const [tweetList, setTweetList] = useState<Tweet[]>([]);
   const [text, setText] = useState("");
-  const [dateInterval, setDateInterval] = useState<DateInterval>(DATE_INTERVAL.DAY_ONE);
+
+  const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
+
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
@@ -52,7 +54,7 @@ const Page: NextPage<Props> = (props) => {
         toTime: toTime.toDate(),
         text,
         isEnabled,
-        dateInterval,
+        interval,
       });
       setTweetList((prev) => [...prev, tweet]);
       notification("Tweetを作成しました");
@@ -97,27 +99,65 @@ const Page: NextPage<Props> = (props) => {
         }}
       />
       <br />
-      <FormControl sx={{ margin: 3 }}>
-        <InputLabel id="date-interval">頻度</InputLabel>
-        <Select
-          labelId="date-interval"
-          id="date-interval"
-          value={dateInterval}
-          label="頻度"
-          onChange={(e) => {
-            const value = e.target.value;
-            if (typeof value === "number") {
-              setDateInterval(value);
-            }
-          }}
-        >
-          {Object.values(DATE_INTERVAL).map((value, index) => (
-            <MenuItem key={index} value={value}>
-              {DATE_INTERVAL_LABEL[value]}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <InputLabel>種別</InputLabel>
+      <Select<Interval["type"]>
+        value={interval.type}
+        onChange={(e) => {
+          const type = e.target.value as Interval["type"];
+          if (type === "day") {
+            setInterval({ type, day: DAY.DAY_ONE });
+          }
+          if (type === "dayOfWeek") {
+            setInterval({ type, dayOfWeek: DAY_OF_WEEK.MON });
+          }
+        }}
+      >
+        {Object.values(DATE_TYPE).map((value, index) => (
+          <MenuItem key={index} value={value}>
+            {DATE_TYPE_LABEL[value]}
+          </MenuItem>
+        ))}
+      </Select>
+      {interval.type === "day" && (
+        <>
+          <InputLabel>頻度</InputLabel>
+          <Select
+            value={interval.day}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (typeof value === "number") {
+                setInterval({ type: "day", day: value });
+              }
+            }}
+          >
+            {Object.values(DAY).map((value, index) => (
+              <MenuItem key={index} value={value}>
+                {DAY_LABEL[value]}
+              </MenuItem>
+            ))}
+          </Select>
+        </>
+      )}
+      {interval.type === "dayOfWeek" && (
+        <>
+          <InputLabel>頻度</InputLabel>
+          <Select
+            value={interval.dayOfWeek}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (typeof value === "number") {
+                setInterval({ type: "dayOfWeek", dayOfWeek: value });
+              }
+            }}
+          >
+            {Object.values(DAY_OF_WEEK).map((value, index) => (
+              <MenuItem key={index} value={value}>
+                {DAY_OF_WEEK_LABEL[value]}
+              </MenuItem>
+            ))}
+          </Select>
+        </>
+      )}
       <br />
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
       <Button onClick={create} variant="contained">
@@ -126,12 +166,12 @@ const Page: NextPage<Props> = (props) => {
       <Divider sx={{ marginTop: 3, marginBottom: 10 }} />
       <h2>Tweet List</h2>
       <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell align="center">投稿内容</TableCell>
-              <TableCell align="center" width={80}>
-                曜日
+              <TableCell align="center" width={120}>
+                種別/頻度
               </TableCell>
               <TableCell align="center" width={120}>
                 時間帯
@@ -148,7 +188,16 @@ const Page: NextPage<Props> = (props) => {
                 <TableCell component="th" scope="tweet">
                   {tweet.text}
                 </TableCell>
-                <TableCell align="center">{dayjs(tweet.fromDate).format("dd")}</TableCell>
+                {tweet.interval.type === "day" && (
+                  <TableCell align="center">
+                    {DATE_TYPE_LABEL[tweet.interval.type]}/{DAY_LABEL[tweet.interval.day]}
+                  </TableCell>
+                )}
+                {tweet.interval.type === "dayOfWeek" && (
+                  <TableCell align="center">
+                    {DATE_TYPE_LABEL[tweet.interval.type]}/{DAY_OF_WEEK_LABEL[tweet.interval.dayOfWeek]}
+                  </TableCell>
+                )}
                 <TableCell align="center">
                   {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
                 </TableCell>
