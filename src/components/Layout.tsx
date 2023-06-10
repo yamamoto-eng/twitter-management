@@ -60,7 +60,7 @@ type ItemProps = {
 
 const Item: FC<ItemProps> = ({ label, icon, href }) => {
   return (
-    <Link href={href}>
+    <Link href={href} shallow>
       <ListItem disablePadding>
         <ListItemButton>
           <ListItemIcon>{icon}</ListItemIcon>

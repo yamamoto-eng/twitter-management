@@ -1,166 +1,41 @@
 import { trpc } from "@/utils";
 import { GetServerSideProps, NextPage } from "next";
-import {
-  Button,
-  Input,
-  InputLabel,
-  MenuItem,
-  Select,
-  Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Divider,
-  TextField,
-} from "@mui/material/";
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material/";
 import dayjs from "dayjs";
-import { useState } from "react";
-import { Interval } from "@/schema/dateTime";
-import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_LABEL, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
+import { DATE_TYPE_LABEL, DAY_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
 import { Tweet } from "@/schema/tweet";
 import { notification } from "@/utils/notification";
 import { useEffectOnce } from "react-use";
 import { trpcHelper } from "@/server/routers/_app";
+import Link from "next/link";
+import { CreateDialog } from "@/components/pages/tweet/CreateDialog";
+import { useRouter } from "next/router";
+
+const DIALOG_TYPE = {
+  CREATE: "create",
+  UPDATE: "update",
+  DELETE: "delete",
+} as const;
 
 type Props = {
   tweetList: Tweet[];
 };
 
-const Page: NextPage<Props> = (props) => {
-  const { mutateAsync } = trpc.tweet.create.useMutation();
+const Page: NextPage<Props> = ({ tweetList }) => {
+  const router = useRouter();
   const { mutateAsync: deleteByIdMutateAsync } = trpc.tweet.deleteById.useMutation();
 
-  const [tweetList, setTweetList] = useState<Tweet[]>([]);
-  const [text, setText] = useState("");
-  const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
-  const [fromTime, setFromTime] = useState(dayjs());
-  const [toTime, setToTime] = useState(dayjs());
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  useEffectOnce(() => {
-    setTweetList(props.tweetList);
-  });
-
-  const create = async () => {
-    try {
-      const { tweet } = await mutateAsync({
-        fromTime: fromTime.toDate(),
-        toTime: toTime.toDate(),
-        text,
-        isEnabled,
-        interval,
-      });
-      setTweetList((prev) => [...prev, tweet]);
-      notification("Tweetを作成しました");
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const deleteById = async (id: string) => {
-    const { tweetList } = await deleteByIdMutateAsync({ ebId: id });
-    setTweetList(tweetList);
+    await deleteByIdMutateAsync({ ebId: id });
     notification("Tweetを削除しました");
   };
 
   return (
     <div>
       <h1>Tweet</h1>
-      <TextField
-        multiline
-        variant="outlined"
-        label="Tweet内容"
-        rows={5}
-        value={text}
-        onChange={(e) => setText(e.currentTarget.value)}
-      />
-      <br />
-      <Input
-        type="time"
-        value={fromTime.format("HH:mm")}
-        onChange={(e) => {
-          const [hour, min] = e.currentTarget.value.split(":");
-          setFromTime((prev) => prev.hour(Number(hour)).minute(Number(min)));
-        }}
-      />
-      〜
-      <Input
-        type="time"
-        value={toTime.format("HH:mm")}
-        onChange={(e) => {
-          const [hour, min] = e.currentTarget.value.split(":");
-          setToTime((prev) => prev.hour(Number(hour)).minute(Number(min)));
-        }}
-      />
-      <br />
-      <InputLabel>種別</InputLabel>
-      <Select<Interval["type"]>
-        value={interval.type}
-        onChange={(e) => {
-          const type = e.target.value as Interval["type"];
-          if (type === "day") {
-            setInterval({ type, day: DAY.DAY_ONE });
-          }
-          if (type === "dayOfWeek") {
-            setInterval({ type, dayOfWeek: DAY_OF_WEEK.MON });
-          }
-        }}
-      >
-        {Object.values(DATE_TYPE).map((value, index) => (
-          <MenuItem key={index} value={value}>
-            {DATE_TYPE_LABEL[value]}
-          </MenuItem>
-        ))}
-      </Select>
-      {interval.type === "day" && (
-        <>
-          <InputLabel>頻度</InputLabel>
-          <Select
-            value={interval.day}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (typeof value === "number") {
-                setInterval({ type: "day", day: value });
-              }
-            }}
-          >
-            {Object.values(DAY).map((value, index) => (
-              <MenuItem key={index} value={value}>
-                {DAY_LABEL[value]}
-              </MenuItem>
-            ))}
-          </Select>
-        </>
-      )}
-      {interval.type === "dayOfWeek" && (
-        <>
-          <InputLabel>頻度</InputLabel>
-          <Select
-            value={interval.dayOfWeek}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (typeof value === "number") {
-                setInterval({ type: "dayOfWeek", dayOfWeek: value });
-              }
-            }}
-          >
-            {Object.values(DAY_OF_WEEK).map((value, index) => (
-              <MenuItem key={index} value={value}>
-                {DAY_OF_WEEK_LABEL[value]}
-              </MenuItem>
-            ))}
-          </Select>
-        </>
-      )}
-      <br />
-      <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
-      <Button onClick={create} variant="contained">
-        作成
-      </Button>
-      <Divider sx={{ marginTop: 3, marginBottom: 10 }} />
+      <Link href={{ query: { type: DIALOG_TYPE.CREATE } }} shallow>
+        <Button variant="contained">新規作成</Button>
+      </Link>
       <h2>Tweet List</h2>
       <TableContainer>
         <Table sx={{ minWidth: 650 }}>
@@ -207,6 +82,7 @@ const Page: NextPage<Props> = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {router.query["type"] === DIALOG_TYPE.CREATE && <CreateDialog />}
     </div>
   );
 };
