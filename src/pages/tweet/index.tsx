@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { getQueryKey } from "@trpc/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { DeleteDialog } from "@/components/pages/tweet/DeleteDialog";
+import { UpdateDialog } from "@/components/pages/tweet/UpdateDialog";
 
 const DIALOG_TYPE = {
   CREATE: "create",
@@ -80,6 +81,9 @@ const Page: NextPage = () => {
                 </TableCell>
                 <TableCell align="center">{tweet.isEnabled ? "有効" : "無効"}</TableCell>
                 <TableCell align="center">
+                  <Link href={{ query: { type: DIALOG_TYPE.UPDATE, id: tweet.ebId } }} shallow>
+                    <Button>編集</Button>
+                  </Link>
                   <Link href={{ query: { type: DIALOG_TYPE.DELETE, id: tweet.ebId } }} shallow>
                     <Button>削除</Button>
                   </Link>
@@ -91,6 +95,7 @@ const Page: NextPage = () => {
       </TableContainer>
 
       <CreateDialog open={router.query["type"] === DIALOG_TYPE.CREATE} onClose={onCloseDialog} />
+      <UpdateDialog open={router.query["type"] === DIALOG_TYPE.UPDATE} onClose={onCloseDialog} />
       <DeleteDialog open={router.query["type"] === DIALOG_TYPE.DELETE} onClose={onCloseDialog} />
     </div>
   );
