@@ -1,15 +1,26 @@
 import { trpc } from "@/utils";
 import { Button, Dialog, Input, InputLabel, MenuItem, Select, Switch, TextField } from "@mui/material";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { ComponentProps, FC, useState } from "react";
 import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
 import { Interval } from "@/schema/dateTime";
 import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_LABEL, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
+import { getQueryKey } from "@trpc/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { Tweet } from "@/schema/tweet";
 
-export const CreateDialog = () => {
-  const router = useRouter();
+type Props = ComponentProps<typeof Dialog>;
+
+export const CreateDialog: FC<Props> = (props) => {
+  if (!props.open) return null;
+  return <_CreateDialog {...props} />;
+};
+
+const _CreateDialog: FC<Props> = (props) => {
+  const queryClient = useQueryClient();
   const { mutateAsync } = trpc.tweet.create.useMutation();
+
+  const tweetListKey = getQueryKey(trpc.tweet.list, undefined, "query");
 
   const [text, setText] = useState("");
   const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
@@ -18,30 +29,26 @@ export const CreateDialog = () => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   const create = async () => {
-    await mutateAsync({
+    const { tweet } = await mutateAsync({
       fromTime: fromTime.toDate(),
       toTime: toTime.toDate(),
       text,
       isEnabled,
       interval,
     });
+
+    queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, (data) => {
+      if (!data) return;
+      return {
+        tweetList: [...data.tweetList, tweet],
+      };
+    });
+
     notification("Tweetを作成しました");
   };
 
   return (
-    <Dialog
-      open
-      onClose={() => {
-        router.push(
-          {
-            query: {},
-          },
-          undefined,
-          { shallow: true }
-        );
-      }}
-      sx={{ padding: 10 }}
-    >
+    <Dialog {...props}>
       <TextField
         multiline
         variant="outlined"
