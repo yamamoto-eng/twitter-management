@@ -7,6 +7,8 @@ const Login: NextPage = () => {
   const router = useRouter();
   const { mutateAsync } = trpc.auth.login.useMutation();
 
+  console.log("login");
+
   const login = async () => {
     const res = await mutateAsync();
     router.replace(res.authorizeURL);
