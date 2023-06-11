@@ -6,5 +6,5 @@ export const input = z.object({
 });
 
 export const output = z.object({
-  tweetList: z.array(tweet),
+  tweet: tweet,
 });

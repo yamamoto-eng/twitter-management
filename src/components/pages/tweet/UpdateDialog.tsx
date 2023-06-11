@@ -1,14 +1,12 @@
 import { trpc } from "@/utils";
 import { Button, Dialog, Input, InputLabel, MenuItem, Select, Switch, TextField } from "@mui/material";
-import { ComponentProps, FC, useEffect, useLayoutEffect, useState } from "react";
+import { ComponentProps, FC, useLayoutEffect, useState } from "react";
 import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
 import { Interval } from "@/schema/dateTime";
 import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_LABEL, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
-import { getQueryKey } from "@trpc/react-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { Tweet } from "@/schema/tweet";
 import { useRouter } from "next/router";
+import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
 
 type Props = ComponentProps<typeof Dialog>;
 
@@ -19,13 +17,11 @@ export const UpdateDialog: FC<Props> = (props) => {
 
 const _UpdateDialog: FC<Props> = (props) => {
   const router = useRouter();
-  const queryClient = useQueryClient();
+  const { getTweet, updateTweet } = useCacheOfTweetList();
   const { mutateAsync } = trpc.tweet.updateById.useMutation();
 
   const id = router.query["id"] as string;
-  const tweetListKey = getQueryKey(trpc.tweet.list, undefined, "query");
-  const data = queryClient.getQueryData<{ tweetList: Tweet[] }>(tweetListKey);
-  const tweet = data?.tweetList.find((tweet) => tweet.ebId === id);
+  const { tweet } = getTweet(id);
 
   const [text, setText] = useState("");
   const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
@@ -43,7 +39,7 @@ const _UpdateDialog: FC<Props> = (props) => {
     }
   }, [tweet]);
 
-  const updateTweet = async () => {
+  const onUpdateTweet = async () => {
     const { tweet } = await mutateAsync({
       ebId: id,
       fromTime: fromTime.toDate(),
@@ -53,17 +49,11 @@ const _UpdateDialog: FC<Props> = (props) => {
       interval,
     });
 
-    queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, (data) => {
-      if (!data) return;
-      return {
-        tweetList: data.tweetList.map((item) => (item.ebId === tweet.ebId ? tweet : item)),
-      };
-    });
-
+    updateTweet(tweet);
     notification("Tweetを更新しました");
   };
 
-  if (!data) return null;
+  if (!tweet) return null;
 
   return (
     <Dialog {...props}>
@@ -155,7 +145,7 @@ const _UpdateDialog: FC<Props> = (props) => {
       )}
       <br />
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
-      <Button onClick={updateTweet} variant="contained">
+      <Button onClick={onUpdateTweet} variant="contained">
         保存
       </Button>
     </Dialog>

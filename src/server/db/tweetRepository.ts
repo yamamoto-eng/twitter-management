@@ -93,7 +93,7 @@ export const tweetRepository = (id: Credentials["id"]) => {
       return tweet;
     },
 
-    deleteTweet: async (ebId: string): Promise<Tweet[]> => {
+    deleteTweet: async (ebId: string): Promise<Tweet> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
@@ -107,7 +107,15 @@ export const tweetRepository = (id: Credentials["id"]) => {
       }
 
       const tweetList = (res.Item.tweetList ?? []) as Tweet[];
-      const newList = tweetList.filter((tweet) => tweet.ebId !== ebId);
+      let deletedTweet: Tweet | undefined = undefined;
+
+      const newList = tweetList.filter((tweet) => {
+        if (tweet.ebId === ebId) {
+          deletedTweet = tweet;
+          return false;
+        }
+        return true;
+      });
 
       await ddbDocClient.update({
         TableName: AWS_CONFIG.TABLE_NAME,
@@ -123,7 +131,11 @@ export const tweetRepository = (id: Credentials["id"]) => {
         },
       });
 
-      return newList;
+      if (!deletedTweet) {
+        throw new Error("tweet not found");
+      }
+
+      return deletedTweet as Tweet;
     },
   };
 };

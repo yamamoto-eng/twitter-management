@@ -13,14 +13,13 @@ export const deleteById = procedure
     await deleteTarget({ ebId: input.ebId });
     await deleteRule({ ebId: input.ebId });
 
-    const tweetList = await deleteTweet(input.ebId);
-    const newTweetList = tweetList.map((tweet) => {
-      return {
+    const tweet = await deleteTweet(input.ebId);
+
+    return {
+      tweet: {
         ...tweet,
         fromDate: dayjs(tweet.fromDate).toDate(),
         toDate: dayjs(tweet.toDate).toDate(),
-      };
-    });
-
-    return { tweetList: newTweetList };
+      },
+    };
   });

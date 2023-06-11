@@ -1,17 +1,14 @@
-import { trpc } from "@/utils";
 import { GetServerSideProps, NextPage } from "next";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider } from "@mui/material/";
 import dayjs from "dayjs";
 import { DATE_TYPE_LABEL, DAY_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
-import { Tweet } from "@/schema/tweet";
 import { trpcHelper } from "@/server/routers/_app";
 import Link from "next/link";
 import { CreateDialog } from "@/components/pages/tweet/CreateDialog";
 import { useRouter } from "next/router";
-import { getQueryKey } from "@trpc/react-query";
-import { useQueryClient } from "@tanstack/react-query";
 import { DeleteDialog } from "@/components/pages/tweet/DeleteDialog";
 import { UpdateDialog } from "@/components/pages/tweet/UpdateDialog";
+import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
 
 const DIALOG_TYPE = {
   CREATE: "create",
@@ -21,9 +18,8 @@ const DIALOG_TYPE = {
 
 const Page: NextPage = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const tweetListKey = getQueryKey(trpc.tweet.list, undefined, "query");
-  const data = queryClient.getQueryData<{ tweetList: Tweet[] }>(tweetListKey);
+  const { getTweetList } = useCacheOfTweetList();
+  const { tweetList } = getTweetList();
 
   const onCloseDialog = () => {
     router.push(
@@ -61,7 +57,7 @@ const Page: NextPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.tweetList.map((tweet) => (
+            {tweetList.map((tweet) => (
               <TableRow key={tweet.ebId} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                 <TableCell component="th" scope="tweet">
                   {tweet.text}

@@ -4,10 +4,8 @@ import { ComponentProps, FC } from "react";
 import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
 import { DATE_TYPE_LABEL, DAY_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
-import { getQueryKey } from "@trpc/react-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { Tweet } from "@/schema/tweet";
 import { useRouter } from "next/router";
+import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
 
 type Props = ComponentProps<typeof Dialog>;
 
@@ -18,17 +16,15 @@ export const DeleteDialog: FC<Props> = (props) => {
 
 const _DeleteDialog: FC<Props> = (props) => {
   const router = useRouter();
-  const queryClient = useQueryClient();
+  const { getTweet, removeTweet } = useCacheOfTweetList();
   const { mutateAsync } = trpc.tweet.deleteById.useMutation();
 
   const id = router.query["id"] as string;
-  const tweetListKey = getQueryKey(trpc.tweet.list, undefined, "query");
-  const data = queryClient.getQueryData<{ tweetList: Tweet[] }>(tweetListKey);
-  const tweet = data?.tweetList.find((tweet) => tweet.ebId === id);
+  const { tweet } = getTweet(id);
 
-  const deleteTweet = async () => {
-    const { tweetList } = await mutateAsync({ ebId: id });
-    queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, { tweetList });
+  const onRemoveTweet = async () => {
+    const { tweet } = await mutateAsync({ ebId: id });
+    removeTweet(tweet.ebId);
     notification("Tweetを削除しました");
   };
 
@@ -46,7 +42,7 @@ const _DeleteDialog: FC<Props> = (props) => {
       {tweet.interval.type === "dayOfWeek" && <p>{DAY_OF_WEEK_LABEL[tweet.interval.dayOfWeek]}</p>}
       <br />
       <p>{tweet.isEnabled ? "有効" : "無効"}</p>
-      <Button onClick={deleteTweet} variant="contained">
+      <Button onClick={onRemoveTweet} variant="contained">
         削除
       </Button>
     </Dialog>

@@ -5,9 +5,7 @@ import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
 import { Interval } from "@/schema/dateTime";
 import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_LABEL, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
-import { getQueryKey } from "@trpc/react-query";
-import { useQueryClient } from "@tanstack/react-query";
-import { Tweet } from "@/schema/tweet";
+import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
 
 type Props = ComponentProps<typeof Dialog>;
 
@@ -17,10 +15,8 @@ export const CreateDialog: FC<Props> = (props) => {
 };
 
 const _CreateDialog: FC<Props> = (props) => {
-  const queryClient = useQueryClient();
+  const { addTweet } = useCacheOfTweetList();
   const { mutateAsync } = trpc.tweet.create.useMutation();
-
-  const tweetListKey = getQueryKey(trpc.tweet.list, undefined, "query");
 
   const [text, setText] = useState("");
   const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
@@ -28,7 +24,7 @@ const _CreateDialog: FC<Props> = (props) => {
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
 
-  const create = async () => {
+  const onCreateTweet = async () => {
     const { tweet } = await mutateAsync({
       fromTime: fromTime.toDate(),
       toTime: toTime.toDate(),
@@ -37,13 +33,7 @@ const _CreateDialog: FC<Props> = (props) => {
       interval,
     });
 
-    queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, (data) => {
-      if (!data) return;
-      return {
-        tweetList: [...data.tweetList, tweet],
-      };
-    });
-
+    addTweet(tweet);
     notification("Tweetを作成しました");
   };
 
@@ -137,7 +127,7 @@ const _CreateDialog: FC<Props> = (props) => {
       )}
       <br />
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
-      <Button onClick={create} variant="contained">
+      <Button onClick={onCreateTweet} variant="contained">
         作成
       </Button>
     </Dialog>
