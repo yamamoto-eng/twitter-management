@@ -21,6 +21,8 @@ const Page: NextPage = () => {
   const { getTweetList } = useCacheOfTweetList();
   const { tweetList } = getTweetList();
 
+  console.log("home");
+
   const onCloseDialog = () => {
     router.push(
       {
