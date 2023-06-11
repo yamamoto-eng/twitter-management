@@ -10,7 +10,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { Create } from "@mui/icons-material";
+import Create from "@mui/icons-material/Create";
 import { Footer } from "./Footer";
 import { PAGES } from "@/constants";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
