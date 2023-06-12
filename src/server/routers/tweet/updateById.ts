@@ -46,6 +46,7 @@ export const updateById = procedure
         ...tweet,
         fromDate: dayjs(tweet.fromDate).toDate(),
         toDate: dayjs(tweet.toDate).toDate(),
+        createdAt: dayjs(tweet.createdAt).toDate(),
       },
     };
   });

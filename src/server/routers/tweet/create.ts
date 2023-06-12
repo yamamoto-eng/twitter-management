@@ -35,22 +35,21 @@ export const create = procedure
     await createRule({ ebId: uuid, date, isEnabled: input.isEnabled });
     await createTarget({ ebId: uuid, event, arn: arn });
 
-    const tweet = {
+    const tweet = await addTweet({
       ebId: uuid,
       text: input.text,
       fromDate: fromDate.toISOString(),
       toDate: toDate.toISOString(),
       isEnabled: input.isEnabled,
       interval: input.interval,
-    };
-
-    await addTweet(tweet);
+    });
 
     return {
       tweet: {
         ...tweet,
         fromDate: dayjs(tweet.fromDate).toDate(),
         toDate: dayjs(tweet.toDate).toDate(),
+        createdAt: dayjs(tweet.createdAt).toDate(),
       },
     };
   });

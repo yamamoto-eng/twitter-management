@@ -7,4 +7,5 @@ export type Tweet = {
   toDate: string;
   isEnabled: boolean;
   interval: Interval;
+  createdAt: string;
 };

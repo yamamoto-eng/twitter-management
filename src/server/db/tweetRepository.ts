@@ -1,11 +1,18 @@
 import { ddbDocClient } from "../../libs";
 import { AWS_CONFIG } from "@/constants";
 import { Credentials, Tweet } from "@/models";
+import dayjs from "dayjs";
 
 export const tweetRepository = (id: Credentials["id"]) => {
   return {
-    addTweet: (tweet: Tweet) => {
-      return ddbDocClient.update({
+    addTweet: async (tweet: Omit<Tweet, "createdAt">): Promise<Tweet> => {
+      const nowDate = dayjs().toISOString();
+
+      const item: Tweet = {
+        ...tweet,
+        createdAt: nowDate,
+      };
+      await ddbDocClient.update({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
           id,
@@ -15,10 +22,12 @@ export const tweetRepository = (id: Credentials["id"]) => {
           "#tl": "tweetList",
         },
         ExpressionAttributeValues: {
-          ":t": [tweet],
+          ":t": [item],
           ":empty": [],
         },
       });
+
+      return item;
     },
 
     readTweetById: async (ebId: string): Promise<Tweet> => {
@@ -60,7 +69,7 @@ export const tweetRepository = (id: Credentials["id"]) => {
       return res.Item.tweetList ?? [];
     },
 
-    updateTweet: async (tweet: Tweet): Promise<Tweet> => {
+    updateTweet: async (tweet: Omit<Tweet, "createdAt">): Promise<Tweet> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
@@ -73,8 +82,17 @@ export const tweetRepository = (id: Credentials["id"]) => {
         throw new Error("tweetList not found");
       }
 
+      let updatedTweet: Tweet | undefined = undefined;
+
       const tweetList = (res.Item.tweetList ?? []) as Tweet[];
-      const newTweetList = tweetList.map((item) => (item.ebId === tweet.ebId ? tweet : item));
+      const newTweetList = tweetList.map((item) => {
+        if (item.ebId === tweet.ebId) {
+          const newTweet = { ...item, ...tweet };
+          updatedTweet = newTweet;
+          return newTweet;
+        }
+        return item;
+      });
 
       await ddbDocClient.update({
         TableName: AWS_CONFIG.TABLE_NAME,
@@ -90,7 +108,11 @@ export const tweetRepository = (id: Credentials["id"]) => {
         },
       });
 
-      return tweet;
+      if (!updatedTweet) {
+        throw new Error("tweet not found");
+      }
+
+      return updatedTweet as Tweet;
     },
 
     deleteTweet: async (ebId: string): Promise<Tweet> => {

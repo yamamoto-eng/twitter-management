@@ -53,6 +53,9 @@ const Page: NextPage = () => {
               <TableCell align="center" width={120}>
                 ステータス
               </TableCell>
+              <TableCell align="center" width={120}>
+                作成日
+              </TableCell>
               <TableCell align="center" width={10}></TableCell>
             </TableRow>
           </TableHead>
@@ -76,6 +79,7 @@ const Page: NextPage = () => {
                   {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
                 </TableCell>
                 <TableCell align="center">{tweet.isEnabled ? "有効" : "無効"}</TableCell>
+                <TableCell align="center">{dayjs(tweet.createdAt).format("YYYY/MM/DD")}</TableCell>
                 <TableCell align="center">
                   <Link href={{ query: { type: DIALOG_TYPE.UPDATE, id: tweet.ebId } }} shallow>
                     <Button>編集</Button>
