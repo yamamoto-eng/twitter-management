@@ -99,7 +99,7 @@ const Page: NextPage = () => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const helpers = await trpcHelper(ctx);
-  await helpers.tweet.list.prefetch();
+  await helpers.tweet.list.fetch();
 
   return {
     props: {

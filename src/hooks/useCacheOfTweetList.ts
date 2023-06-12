@@ -22,24 +22,27 @@ export const useCacheOfTweetList = () => {
 
     addTweet: (tweet: Tweet) => {
       queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, (data) => {
+        const tweetList = data?.tweetList ?? [];
         return {
-          tweetList: [...(data?.tweetList ?? []), tweet],
+          tweetList: [...tweetList, tweet],
         };
       });
     },
 
     updateTweet: (tweet: Tweet) => {
       queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, (data) => {
+        const tweetList = data?.tweetList ?? [];
         return {
-          tweetList: (data?.tweetList ?? []).map((item) => (item.ebId === tweet.ebId ? tweet : item)),
+          tweetList: tweetList.map((item) => (item.ebId === tweet.ebId ? tweet : item)),
         };
       });
     },
 
     removeTweet: (ebId: string) => {
       queryClient.setQueryData<{ tweetList: Tweet[] }>(tweetListKey, (data) => {
+        const tweetList = data?.tweetList ?? [];
         return {
-          tweetList: (data?.tweetList ?? []).filter((tweet) => tweet.ebId !== ebId),
+          tweetList: tweetList.filter((tweet) => tweet.ebId !== ebId),
         };
       });
     },
