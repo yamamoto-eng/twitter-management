@@ -3,7 +3,7 @@ import { Button, Dialog } from "@mui/material";
 import { ComponentProps, FC } from "react";
 import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
-import { DATE_TYPE_LABEL, DAY_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
+import { DATE_TYPE_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
 import { useRouter } from "next/router";
 import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
 
@@ -38,7 +38,7 @@ const _DeleteDialog: FC<Props> = (props) => {
       <br />
       <p>種別</p>
       <p>{DATE_TYPE_LABEL[tweet.interval.type]}</p>
-      {tweet.interval.type === "day" && <p>{DAY_LABEL[tweet.interval.day]}</p>}
+      {tweet.interval.type === "day" && <p>{`${tweet.interval.day}日`}</p>}
       {tweet.interval.type === "dayOfWeek" && <p>{DAY_OF_WEEK_LABEL[tweet.interval.dayOfWeek]}</p>}
       <br />
       <p>{tweet.isEnabled ? "有効" : "無効"}</p>

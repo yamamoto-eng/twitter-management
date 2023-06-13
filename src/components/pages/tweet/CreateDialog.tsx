@@ -4,7 +4,7 @@ import { ComponentProps, FC, useState } from "react";
 import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
 import { Interval } from "@/schema/dateTime";
-import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_LABEL, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
+import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
 import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
 
 type Props = ComponentProps<typeof Dialog>;
@@ -72,7 +72,7 @@ const _CreateDialog: FC<Props> = (props) => {
         onChange={(e) => {
           const type = e.target.value as Interval["type"];
           if (type === "day") {
-            setInterval({ type, day: DAY.DAY_ONE });
+            setInterval({ type, day: DAY.ONE });
           }
           if (type === "dayOfWeek") {
             setInterval({ type, dayOfWeek: DAY_OF_WEEK.MON });
@@ -99,7 +99,7 @@ const _CreateDialog: FC<Props> = (props) => {
           >
             {Object.values(DAY).map((value, index) => (
               <MenuItem key={index} value={value}>
-                {DAY_LABEL[value]}
+                {`${value}日`}
               </MenuItem>
             ))}
           </Select>

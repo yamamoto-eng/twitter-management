@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from "next";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider } from "@mui/material/";
 import dayjs from "dayjs";
-import { DATE_TYPE_LABEL, DAY_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
+import { DATE_TYPE_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
 import { trpcHelper } from "@/server/routers/_app";
 import Link from "next/link";
 import { CreateDialog } from "@/components/pages/tweet/CreateDialog";
@@ -67,7 +67,7 @@ const Page: NextPage = () => {
                 </TableCell>
                 {tweet.interval.type === "day" && (
                   <TableCell align="center">
-                    {DATE_TYPE_LABEL[tweet.interval.type]}/{DAY_LABEL[tweet.interval.day]}
+                    {DATE_TYPE_LABEL[tweet.interval.type]}/{`${tweet.interval.day}日`}
                   </TableCell>
                 )}
                 {tweet.interval.type === "dayOfWeek" && (
