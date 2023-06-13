@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { interval } from "./dateTime";
+import { day, interval } from "./dateTime";
 
 export const scheduledTweet = z.object({
   ebId: z.string(),
@@ -9,6 +9,7 @@ export const scheduledTweet = z.object({
   isEnabled: z.boolean(),
   interval: interval,
   createdAt: z.date(),
+  scheduledDeletionDay: day.nullable(),
 });
 
 export type ScheduledTweet = z.infer<typeof scheduledTweet>;

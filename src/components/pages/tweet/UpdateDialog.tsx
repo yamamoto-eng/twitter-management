@@ -28,6 +28,7 @@ const _UpdateDialog: FC<Props> = (props) => {
   const [fromTime, setFromTime] = useState(dayjs());
   const [toTime, setToTime] = useState(dayjs());
   const [isEnabled, setIsEnabled] = useState(false);
+  const [scheduledDeletionDay, setScheduledDeletionDay] = useState<(typeof DAY)[keyof typeof DAY] | 0>(0);
 
   useLayoutEffect(() => {
     if (scheduledTweet) {
@@ -36,6 +37,7 @@ const _UpdateDialog: FC<Props> = (props) => {
       setFromTime(dayjs(scheduledTweet.fromDate));
       setToTime(dayjs(scheduledTweet.toDate));
       setIsEnabled(scheduledTweet.isEnabled);
+      setScheduledDeletionDay(scheduledTweet.scheduledDeletionDay ?? 0);
     }
   }, [scheduledTweet]);
 
@@ -47,6 +49,7 @@ const _UpdateDialog: FC<Props> = (props) => {
       text,
       isEnabled,
       interval,
+      scheduledDeletionDay: scheduledDeletionDay || null,
     });
 
     updateScheduledTweet(scheduledTweet);
@@ -144,7 +147,24 @@ const _UpdateDialog: FC<Props> = (props) => {
         </>
       )}
       <br />
+      <InputLabel>Tweetを自動削除</InputLabel>
+      <Select
+        value={scheduledDeletionDay}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (typeof value === "number") {
+            setScheduledDeletionDay(value);
+          }
+        }}
+      >
+        {Object.values({ _: 0, ...DAY }).map((value, index) => (
+          <MenuItem key={index} value={value}>
+            {value ? `${value}日後` : "削除しない"}
+          </MenuItem>
+        ))}
+      </Select>
       <Switch checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
+      <p>作成日:{dayjs(scheduledTweet.createdAt).format("YYYY/MM/DD")}</p>
       <Button onClick={onUpdateTweet} variant="contained">
         保存
       </Button>

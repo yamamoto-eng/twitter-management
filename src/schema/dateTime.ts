@@ -16,4 +16,5 @@ const dayOfWeekInterval = z.object({
 
 export const interval = z.union([dayInterval, dayOfWeekInterval]);
 
+export type Day = z.infer<typeof day>;
 export type Interval = z.infer<typeof interval>;

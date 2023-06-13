@@ -42,6 +42,11 @@ const _DeleteDialog: FC<Props> = (props) => {
       {scheduledTweet.interval.type === "dayOfWeek" && <p>{DAY_OF_WEEK_LABEL[scheduledTweet.interval.dayOfWeek]}</p>}
       <br />
       <p>{scheduledTweet.isEnabled ? "有効" : "無効"}</p>
+      <p>
+        Tweetを自動削除:
+        {scheduledTweet.scheduledDeletionDay ? `${scheduledTweet.scheduledDeletionDay}日後` : "削除しない"}
+      </p>
+      <p>作成日:{dayjs(scheduledTweet.createdAt).format("YYYY/MM/DD")}</p>
       <Button onClick={onRemoveTweet} variant="contained">
         削除
       </Button>

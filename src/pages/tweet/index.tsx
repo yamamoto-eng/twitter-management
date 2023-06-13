@@ -54,6 +54,9 @@ const Page: NextPage = () => {
                 ステータス
               </TableCell>
               <TableCell align="center" width={120}>
+                Tweetを自動削除
+              </TableCell>
+              <TableCell align="center" width={120}>
                 作成日
               </TableCell>
               <TableCell align="center" width={10}></TableCell>
@@ -78,6 +81,9 @@ const Page: NextPage = () => {
                   {dayjs(scheduledTweet.fromDate).format("HH:mm")}~{dayjs(scheduledTweet.toDate).format("HH:mm")}
                 </TableCell>
                 <TableCell align="center">{scheduledTweet.isEnabled ? "有効" : "無効"}</TableCell>
+                <TableCell align="center">
+                  {scheduledTweet.scheduledDeletionDay ? `${scheduledTweet.scheduledDeletionDay}日後` : "削除しない"}
+                </TableCell>
                 <TableCell align="center">{dayjs(scheduledTweet.createdAt).format("YYYY/MM/DD")}</TableCell>
                 <TableCell align="center">
                   <Link href={{ query: { type: DIALOG_TYPE.UPDATE, id: scheduledTweet.ebId } }} shallow>

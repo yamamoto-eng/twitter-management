@@ -8,7 +8,7 @@ export const input = z.object({
   toTime: z.date(),
   isEnabled: z.boolean(),
   interval: interval,
-  // scheduledDeletionDay: day.nullable(),
+  scheduledDeletionDay: day.nullable(),
 });
 
 export const output = z.object({

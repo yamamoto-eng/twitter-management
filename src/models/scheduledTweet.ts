@@ -1,4 +1,4 @@
-import { Interval } from "@/schema/dateTime";
+import { Day, Interval } from "@/schema/dateTime";
 
 export type ScheduledTweet = {
   ebId: string;
@@ -8,4 +8,5 @@ export type ScheduledTweet = {
   isEnabled: boolean;
   interval: Interval;
   createdAt: string;
+  scheduledDeletionDay: Day | null;
 };

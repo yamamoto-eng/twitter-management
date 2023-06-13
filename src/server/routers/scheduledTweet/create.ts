@@ -42,6 +42,7 @@ export const create = procedure
       toDate: toDate.toISOString(),
       isEnabled: input.isEnabled,
       interval: input.interval,
+      scheduledDeletionDay: input.scheduledDeletionDay,
     });
 
     return {
