@@ -8,7 +8,7 @@ import { CreateDialog } from "@/components/pages/tweet/CreateDialog";
 import { useRouter } from "next/router";
 import { DeleteDialog } from "@/components/pages/tweet/DeleteDialog";
 import { UpdateDialog } from "@/components/pages/tweet/UpdateDialog";
-import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
+import { useCacheOfScheduledTweetList } from "@/hooks/useCacheOfScheduledTweetList";
 
 const DIALOG_TYPE = {
   CREATE: "create",
@@ -18,8 +18,8 @@ const DIALOG_TYPE = {
 
 const Page: NextPage = () => {
   const router = useRouter();
-  const { getTweetList } = useCacheOfTweetList();
-  const { tweetList } = getTweetList();
+  const { getScheduledTweetList } = useCacheOfScheduledTweetList();
+  const { scheduledTweetList } = getScheduledTweetList();
 
   const onCloseDialog = () => {
     router.push(
@@ -60,31 +60,30 @@ const Page: NextPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tweetList.map((tweet) => (
-              <TableRow key={tweet.ebId} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                <TableCell component="th" scope="tweet">
-                  {tweet.text}
-                </TableCell>
-                {tweet.interval.type === "day" && (
+            {scheduledTweetList.map((scheduledTweet) => (
+              <TableRow key={scheduledTweet.ebId} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableCell component="th">{scheduledTweet.text}</TableCell>
+                {scheduledTweet.interval.type === "day" && (
                   <TableCell align="center">
-                    {DATE_TYPE_LABEL[tweet.interval.type]}/{`${tweet.interval.day}日`}
+                    {DATE_TYPE_LABEL[scheduledTweet.interval.type]}/{`${scheduledTweet.interval.day}日`}
                   </TableCell>
                 )}
-                {tweet.interval.type === "dayOfWeek" && (
+                {scheduledTweet.interval.type === "dayOfWeek" && (
                   <TableCell align="center">
-                    {DATE_TYPE_LABEL[tweet.interval.type]}/{DAY_OF_WEEK_LABEL[tweet.interval.dayOfWeek]}
+                    {DATE_TYPE_LABEL[scheduledTweet.interval.type]}/
+                    {DAY_OF_WEEK_LABEL[scheduledTweet.interval.dayOfWeek]}
                   </TableCell>
                 )}
                 <TableCell align="center">
-                  {dayjs(tweet.fromDate).format("HH:mm")}~{dayjs(tweet.toDate).format("HH:mm")}
+                  {dayjs(scheduledTweet.fromDate).format("HH:mm")}~{dayjs(scheduledTweet.toDate).format("HH:mm")}
                 </TableCell>
-                <TableCell align="center">{tweet.isEnabled ? "有効" : "無効"}</TableCell>
-                <TableCell align="center">{dayjs(tweet.createdAt).format("YYYY/MM/DD")}</TableCell>
+                <TableCell align="center">{scheduledTweet.isEnabled ? "有効" : "無効"}</TableCell>
+                <TableCell align="center">{dayjs(scheduledTweet.createdAt).format("YYYY/MM/DD")}</TableCell>
                 <TableCell align="center">
-                  <Link href={{ query: { type: DIALOG_TYPE.UPDATE, id: tweet.ebId } }} shallow>
+                  <Link href={{ query: { type: DIALOG_TYPE.UPDATE, id: scheduledTweet.ebId } }} shallow>
                     <Button>編集</Button>
                   </Link>
-                  <Link href={{ query: { type: DIALOG_TYPE.DELETE, id: tweet.ebId } }} shallow>
+                  <Link href={{ query: { type: DIALOG_TYPE.DELETE, id: scheduledTweet.ebId } }} shallow>
                     <Button>削除</Button>
                   </Link>
                 </TableCell>
@@ -103,7 +102,7 @@ const Page: NextPage = () => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const helpers = await trpcHelper(ctx);
-  await helpers.tweet.list.prefetch();
+  await helpers.scheduledTweet.list.prefetch();
 
   return {
     props: {

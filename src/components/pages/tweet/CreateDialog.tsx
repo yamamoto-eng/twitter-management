@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { notification } from "@/utils/notification";
 import { Interval } from "@/schema/dateTime";
 import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
-import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
+import { useCacheOfScheduledTweetList } from "@/hooks/useCacheOfScheduledTweetList";
 
 type Props = ComponentProps<typeof Dialog>;
 
@@ -15,8 +15,8 @@ export const CreateDialog: FC<Props> = (props) => {
 };
 
 const _CreateDialog: FC<Props> = (props) => {
-  const { addTweet } = useCacheOfTweetList();
-  const { mutateAsync } = trpc.tweet.create.useMutation();
+  const { addScheduledTweet } = useCacheOfScheduledTweetList();
+  const { mutateAsync } = trpc.scheduledTweet.create.useMutation();
 
   const [text, setText] = useState("");
   const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
@@ -25,7 +25,7 @@ const _CreateDialog: FC<Props> = (props) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   const onCreateTweet = async () => {
-    const { tweet } = await mutateAsync({
+    const { scheduledTweet } = await mutateAsync({
       fromTime: fromTime.toDate(),
       toTime: toTime.toDate(),
       text,
@@ -33,7 +33,7 @@ const _CreateDialog: FC<Props> = (props) => {
       interval,
     });
 
-    addTweet(tweet);
+    addScheduledTweet(scheduledTweet);
     notification("Tweetを作成しました");
   };
 

@@ -1,14 +1,14 @@
 import { GetServerSidePropsContext } from "next";
 import { router } from "../trpc";
 import { auth } from "./auth";
-import { tweet } from "./tweet";
+import { scheduledTweet } from "./scheduledTweet";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { createHelperContext } from "../context";
 import superjson from "superjson";
 
 export const appRouter = router({
   auth,
-  tweet,
+  scheduledTweet,
 });
 
 export type AppRouter = typeof appRouter;

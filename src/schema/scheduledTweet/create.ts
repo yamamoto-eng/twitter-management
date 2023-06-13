@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { tweet } from "../tweet";
-import { interval } from "../dateTime";
+import { scheduledTweet } from "../scheduledTweet";
+import { day, interval } from "../dateTime";
 
 export const input = z.object({
   text: z.string(),
@@ -8,8 +8,9 @@ export const input = z.object({
   toTime: z.date(),
   isEnabled: z.boolean(),
   interval: interval,
+  // scheduledDeletionDay: day.nullable(),
 });
 
 export const output = z.object({
-  tweet,
+  scheduledTweet,
 });

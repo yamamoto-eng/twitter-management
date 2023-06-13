@@ -1,19 +1,19 @@
 import { procedure } from "../../trpc";
-import { tweetRepository } from "@/server/db";
+import { scheduledTweetRepository } from "@/server/db";
 import dayjs from "dayjs";
 import { createTarget, updateRule } from "@/server/services/eventBridge";
-import { input, output } from "@/schema/tweet/updateById";
+import { input, output } from "@/schema/scheduledTweet/update";
 import { createNextDateForTime } from "@/utils/createNextDateForTime";
 import { createRandomDateInRange } from "@/utils";
 import { AWS_CONFIG } from "@/constants";
 import { getArn } from "@/server/services/lambda/getArn";
 import { TweetLambdaEvent } from "@/types/lambdaEvent";
 
-export const updateById = procedure
+export const update = procedure
   .input(input)
   .output(output)
   .mutation(async ({ ctx, input }) => {
-    const { updateTweet } = tweetRepository(ctx.session.id);
+    const { updateScheduledTweet } = scheduledTweetRepository(ctx.session.id);
 
     const { fromDate, toDate } = createNextDateForTime(dayjs(input.fromTime), dayjs(input.toTime), input.interval);
     const { date } = createRandomDateInRange(fromDate, toDate);
@@ -32,7 +32,7 @@ export const updateById = procedure
     await createTarget({ arn, ebId: input.ebId, event });
     await updateRule({ ebId: input.ebId, date, isEnabled: input.isEnabled });
 
-    const tweet = await updateTweet({
+    const scheduledTweet = await updateScheduledTweet({
       ebId: input.ebId,
       text: input.text,
       fromDate: fromDate.toISOString(),
@@ -42,11 +42,11 @@ export const updateById = procedure
     });
 
     return {
-      tweet: {
-        ...tweet,
-        fromDate: dayjs(tweet.fromDate).toDate(),
-        toDate: dayjs(tweet.toDate).toDate(),
-        createdAt: dayjs(tweet.createdAt).toDate(),
+      scheduledTweet: {
+        ...scheduledTweet,
+        fromDate: dayjs(scheduledTweet.fromDate).toDate(),
+        toDate: dayjs(scheduledTweet.toDate).toDate(),
+        createdAt: dayjs(scheduledTweet.createdAt).toDate(),
       },
     };
   });

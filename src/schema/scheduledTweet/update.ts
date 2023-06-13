@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { tweet } from "../tweet";
+import { scheduledTweet } from "../scheduledTweet";
 import { interval } from "../dateTime";
 
 export const input = z.object({
@@ -12,5 +12,5 @@ export const input = z.object({
 });
 
 export const output = z.object({
-  tweet: tweet,
+  scheduledTweet,
 });

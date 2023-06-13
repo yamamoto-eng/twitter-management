@@ -1,2 +1,2 @@
 export * from "./credentialsRepository";
-export * from "./tweetRepository";
+export * from "./scheduledTweetRepository";

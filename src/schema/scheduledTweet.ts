@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { interval } from "./dateTime";
 
-export const tweet = z.object({
+export const scheduledTweet = z.object({
   ebId: z.string(),
   text: z.string(),
   fromDate: z.date(),
@@ -11,4 +11,4 @@ export const tweet = z.object({
   createdAt: z.date(),
 });
 
-export type Tweet = z.infer<typeof tweet>;
+export type ScheduledTweet = z.infer<typeof scheduledTweet>;

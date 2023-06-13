@@ -6,7 +6,7 @@ import { notification } from "@/utils/notification";
 import { Interval } from "@/schema/dateTime";
 import { DATE_TYPE, DATE_TYPE_LABEL, DAY, DAY_OF_WEEK, DAY_OF_WEEK_LABEL } from "@/constants";
 import { useRouter } from "next/router";
-import { useCacheOfTweetList } from "@/hooks/useCacheOfTweetList";
+import { useCacheOfScheduledTweetList } from "@/hooks/useCacheOfScheduledTweetList";
 
 type Props = ComponentProps<typeof Dialog>;
 
@@ -17,11 +17,11 @@ export const UpdateDialog: FC<Props> = (props) => {
 
 const _UpdateDialog: FC<Props> = (props) => {
   const router = useRouter();
-  const { getTweet, updateTweet } = useCacheOfTweetList();
-  const { mutateAsync } = trpc.tweet.updateById.useMutation();
+  const { getScheduledTweet, updateScheduledTweet } = useCacheOfScheduledTweetList();
+  const { mutateAsync } = trpc.scheduledTweet.update.useMutation();
 
   const id = router.query["id"] as string;
-  const { tweet } = getTweet(id);
+  const { scheduledTweet } = getScheduledTweet(id);
 
   const [text, setText] = useState("");
   const [interval, setInterval] = useState<Interval>({ type: "day", day: 1 });
@@ -30,17 +30,17 @@ const _UpdateDialog: FC<Props> = (props) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   useLayoutEffect(() => {
-    if (tweet) {
-      setText(tweet.text);
-      setInterval(tweet.interval);
-      setFromTime(dayjs(tweet.fromDate));
-      setToTime(dayjs(tweet.toDate));
-      setIsEnabled(tweet.isEnabled);
+    if (scheduledTweet) {
+      setText(scheduledTweet.text);
+      setInterval(scheduledTweet.interval);
+      setFromTime(dayjs(scheduledTweet.fromDate));
+      setToTime(dayjs(scheduledTweet.toDate));
+      setIsEnabled(scheduledTweet.isEnabled);
     }
-  }, [tweet]);
+  }, [scheduledTweet]);
 
   const onUpdateTweet = async () => {
-    const { tweet } = await mutateAsync({
+    const { scheduledTweet } = await mutateAsync({
       ebId: id,
       fromTime: fromTime.toDate(),
       toTime: toTime.toDate(),
@@ -49,11 +49,11 @@ const _UpdateDialog: FC<Props> = (props) => {
       interval,
     });
 
-    updateTweet(tweet);
+    updateScheduledTweet(scheduledTweet);
     notification("Tweetを更新しました");
   };
 
-  if (!tweet) return null;
+  if (!scheduledTweet) return null;
 
   return (
     <Dialog {...props}>

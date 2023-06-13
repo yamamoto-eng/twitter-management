@@ -4,22 +4,26 @@ import { TweetLambdaEvent } from "@/types/lambdaEvent";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ja";
-import { tweetRepository } from "@/server/db";
+import { scheduledTweetRepository } from "@/server/db";
 import { createRandomDateInRange } from "@/utils";
 import { createNextDateForEventBridge } from "@/utils/createNextDateForEventBridge";
 
 dayjs.extend(utc);
 dayjs.locale("ja");
 
-export const tweet = async (event: TweetLambdaEvent) => {
-  const { readTweetById, updateTweet } = tweetRepository(event.id);
+export const scheduledTweet = async (event: TweetLambdaEvent) => {
+  const { readScheduledTweet, updateScheduledTweet } = scheduledTweetRepository(event.id);
 
-  const tweet = await readTweetById(event.ebId);
+  const scheduledTweet = await readScheduledTweet(event.ebId);
 
-  const { fromDate, toDate } = createNextDateForEventBridge(dayjs(tweet.fromDate), dayjs(tweet.toDate), tweet.interval);
+  const { fromDate, toDate } = createNextDateForEventBridge(
+    dayjs(scheduledTweet.fromDate),
+    dayjs(scheduledTweet.toDate),
+    scheduledTweet.interval
+  );
   const { date } = createRandomDateInRange(fromDate, toDate);
 
-  await twitterApiV2(event.id, (client) => client.tweets.createTweet({ text: tweet.text }));
+  await twitterApiV2(event.id, (client) => client.tweets.createTweet({ text: scheduledTweet.text }));
   await updateRule({ ebId: event.ebId, date });
-  await updateTweet({ ...tweet, fromDate: fromDate.toISOString(), toDate: toDate.toISOString() });
+  await updateScheduledTweet({ ...scheduledTweet, fromDate: fromDate.toISOString(), toDate: toDate.toISOString() });
 };

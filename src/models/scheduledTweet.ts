@@ -1,6 +1,6 @@
 import { Interval } from "@/schema/dateTime";
 
-export type Tweet = {
+export type ScheduledTweet = {
   ebId: string;
   text: string;
   fromDate: string;

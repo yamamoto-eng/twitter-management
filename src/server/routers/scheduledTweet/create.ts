@@ -1,8 +1,8 @@
 import { procedure } from "../../trpc";
-import { tweetRepository } from "@/server/db";
+import { scheduledTweetRepository } from "@/server/db";
 import { createRule, createTarget } from "@/server/services/eventBridge";
 import { v4 } from "uuid";
-import { input, output } from "@/schema/tweet/create";
+import { input, output } from "@/schema/scheduledTweet/create";
 import { getArn } from "@/server/services/lambda/getArn";
 import { AWS_CONFIG } from "@/constants";
 import { TweetLambdaEvent } from "@/types/lambdaEvent";
@@ -19,7 +19,7 @@ export const create = procedure
     const { fromDate, toDate } = createNextDateForTime(dayjs(input.fromTime), dayjs(input.toTime), input.interval);
     const { date } = createRandomDateInRange(fromDate, toDate);
 
-    const { addTweet } = tweetRepository(ctx.session.id);
+    const { addScheduledTweet } = scheduledTweetRepository(ctx.session.id);
 
     const { arn } = await getArn({ functionName: AWS_CONFIG.LAMBDA_FUNCTION_NAME.TWEET });
 
@@ -35,7 +35,7 @@ export const create = procedure
     await createRule({ ebId: uuid, date, isEnabled: input.isEnabled });
     await createTarget({ ebId: uuid, event, arn: arn });
 
-    const tweet = await addTweet({
+    const scheduledTweet = await addScheduledTweet({
       ebId: uuid,
       text: input.text,
       fromDate: fromDate.toISOString(),
@@ -45,11 +45,11 @@ export const create = procedure
     });
 
     return {
-      tweet: {
-        ...tweet,
-        fromDate: dayjs(tweet.fromDate).toDate(),
-        toDate: dayjs(tweet.toDate).toDate(),
-        createdAt: dayjs(tweet.createdAt).toDate(),
+      scheduledTweet: {
+        ...scheduledTweet,
+        fromDate: dayjs(scheduledTweet.fromDate).toDate(),
+        toDate: dayjs(scheduledTweet.toDate).toDate(),
+        createdAt: dayjs(scheduledTweet.createdAt).toDate(),
       },
     };
   });
