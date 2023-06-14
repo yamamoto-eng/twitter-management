@@ -33,6 +33,8 @@ const Callback: NextPage<PageProps> = ({ state, code }) => {
         return;
       }
 
+      console.log(data.message);
+      notification(data.message, { variant: "error" });
       router.replace(PAGES.LOGIN);
     } catch {}
   };

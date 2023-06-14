@@ -15,5 +15,6 @@ export const output = z
   .or(
     z.object({
       success: z.literal(false),
+      message: z.string(),
     })
   );
