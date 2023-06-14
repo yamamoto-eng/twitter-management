@@ -4,6 +4,7 @@ import { Credentials, ScheduledTweet } from "@/models";
 import dayjs from "dayjs";
 
 export const scheduledTweetRepository = (id: Credentials["id"]) => {
+  const tableName = AWS_CONFIG.TABLE_NAME;
   const itemName = AWS_CONFIG.TABLE_ITEMS.SCHEDULED_TWEET_LIST;
 
   return {
@@ -15,7 +16,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
         createdAt: nowDate,
       };
       await ddbDocClient.update({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
@@ -34,7 +35,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
 
     readScheduledTweet: async (ebId: string): Promise<ScheduledTweet> => {
       const res = await ddbDocClient.get({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
@@ -57,7 +58,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
 
     readScheduledTweetList: async (): Promise<ScheduledTweet[]> => {
       const res = await ddbDocClient.get({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
@@ -73,7 +74,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
 
     updateScheduledTweet: async (scheduledTweet: Omit<ScheduledTweet, "createdAt">): Promise<ScheduledTweet> => {
       const res = await ddbDocClient.get({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
@@ -97,7 +98,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
       });
 
       await ddbDocClient.update({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
@@ -119,7 +120,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
 
     deleteScheduledTweet: async (ebId: string): Promise<ScheduledTweet> => {
       const res = await ddbDocClient.get({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
@@ -142,7 +143,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
       });
 
       await ddbDocClient.update({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           id,
         },
