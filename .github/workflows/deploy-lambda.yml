@@ -1,15 +1,16 @@
 # TODO: .env.localの情報をGitHub Secretで管理する
-name: Deploy lambda
-on:
-  push:
-    branches:
-      - main
-jobs:
-  deploy-lambda:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: yarn install
-      - name: Run deploy lambda
-        run: yarn deploy:lambda
+# name: Deploy lambda
+
+# on:
+#   push:
+#     branches:
+#       - main
+# jobs:
+#   deploy-lambda:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Install dependencies
+#         run: yarn install
+#       - name: Run deploy lambda
+#         run: yarn deploy:lambda
