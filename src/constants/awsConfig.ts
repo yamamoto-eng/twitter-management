@@ -13,5 +13,6 @@ export const AWS_CONFIG = {
   },
   LAMBDA_FUNCTION_NAME: {
     TWEET: "twitter-management-tweet",
+    DELETE_TWEET: "twitter-management-deleteTweet",
   },
 } as const;

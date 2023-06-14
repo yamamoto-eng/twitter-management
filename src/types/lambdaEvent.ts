@@ -5,4 +5,9 @@ export type TweetLambdaEvent = {
   ebId: string;
 };
 
-export type LambdaEvent = TweetLambdaEvent;
+export type DeleteTweetLambdaEvent = {
+  id: Credentials["id"];
+  ebId: string;
+};
+
+export type LambdaEvent = TweetLambdaEvent | DeleteTweetLambdaEvent;

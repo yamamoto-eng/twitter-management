@@ -41,6 +41,22 @@ Resources:
           APP_AWS_ACCESS_KEY_ID: !Ref APPAWSACCESSKEYID
           APP_AWS_SECRET_ACCESS_KEY: !Ref APPAWSSECRETACCESSKEY
 
+  LambdaDeleteTweetFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: ../lambda/bundle
+      FunctionName: twitter-management-deleteTweet
+      Handler: deleteTweet.deleteTweet
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          CLIENT_ID: !Ref CLIENTID
+          CLIENT_SECRET: !Ref CLIENTSECRET
+          ENCRYPTION_KEY: !Ref ENCRYPTIONKEY
+          APP_AWS_ACCESS_KEY_ID: !Ref APPAWSACCESSKEYID
+          APP_AWS_SECRET_ACCESS_KEY: !Ref APPAWSSECRETACCESSKEY
+
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
