@@ -57,9 +57,16 @@ Resources:
           APP_AWS_ACCESS_KEY_ID: !Ref APPAWSACCESSKEYID
           APP_AWS_SECRET_ACCESS_KEY: !Ref APPAWSSECRETACCESSKEY
 
-  LambdaInvokePermission:
+  LambdaTweetInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !GetAtt LambdaTweetFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+
+  LambdaDeleteTweetInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaDeleteTweetFunction.Arn
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
