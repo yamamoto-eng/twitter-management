@@ -1,3 +1,4 @@
+# TODO: .env.localの情報をGitHub Secretで管理する
 name: Deploy lambda
 on:
   push:
@@ -6,7 +7,6 @@ on:
 jobs:
   deploy-lambda:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
