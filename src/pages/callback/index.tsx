@@ -29,12 +29,10 @@ const Callback: NextPage<PageProps> = ({ state, code }) => {
 
         notification("ログインしました");
         router.replace(PAGES.HOME);
-
         return;
       }
 
-      console.log(data.message);
-      notification(data.message, { variant: "error" });
+      notification("ログインに失敗しました", { variant: "error" });
       router.replace(PAGES.LOGIN);
     } catch {}
   };

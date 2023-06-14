@@ -10,11 +10,7 @@ export const callback = procedure
   .output(output)
   .mutation(async ({ ctx, input }) => {
     if (ctx.session.state !== input.state) {
-      return { success: false, message: "Invalid state" };
-    }
-
-    if (!ctx.session.codeVerifier) {
-      return { success: false, message: "Invalid code verifier" };
+      return { success: false };
     }
 
     try {
@@ -32,7 +28,7 @@ export const callback = procedure
       } = await client.users.findMyUser(userFields);
 
       if (!data) {
-        return { success: false, message: "User not found" };
+        return { success: false };
       }
 
       const { createCredentials, readCredentials, updateCredentials } = credentialsRepository(data.id);
@@ -54,7 +50,7 @@ export const callback = procedure
         userName: data.username,
         image: data.profile_image_url ?? TWITTER_CONFIG.DEFAULT_IMAGE,
       };
-    } catch (e: any) {
-      return { success: false, message: e.message };
+    } catch (e) {
+      return { success: false };
     }
   });

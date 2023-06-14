@@ -21,6 +21,11 @@ export const tweet = async (event: TweetLambdaEvent) => {
 
   const scheduledTweet = await readScheduledTweet(event.ebId);
 
+  // TODO: remove rule and target
+  if (!scheduledTweet) {
+    throw new Error("scheduledTweet not found");
+  }
+
   const { fromDate, toDate } = createNextDateForEventBridge(
     dayjs(scheduledTweet.fromDate),
     dayjs(scheduledTweet.toDate),

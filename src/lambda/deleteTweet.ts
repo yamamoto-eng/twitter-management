@@ -16,6 +16,11 @@ export const deleteTweet = async (event: DeleteTweetLambdaEvent) => {
   await deleteTarget({ ebId: event.ebId });
   await deleteRule({ ebId: event.ebId });
 
+  // TODO: handle error
+  if (!executedTweet) {
+    throw new Error("executedTweet not found");
+  }
+
   if (executedTweet.scheduledDeletionDate) {
     const {
       data: { data },

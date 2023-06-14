@@ -37,7 +37,7 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
       return item;
     },
 
-    readExecutedTweet: async (ebId: string): Promise<ExecutedTweet> => {
+    readExecutedTweet: async (ebId: string): Promise<ExecutedTweet | undefined> => {
       const res = await ddbDocClient.get({
         TableName: tableName,
         Key: {
@@ -47,15 +47,11 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
       });
 
       if (!res.Item) {
-        throw new Error(`${itemName} not found`);
+        return undefined;
       }
 
       const executedTweetList: ExecutedTweet[] = res.Item[itemName] ?? [];
       const executedTweet = executedTweetList.find((executedTweet) => executedTweet.ebId === ebId);
-
-      if (!executedTweet) {
-        throw new Error("executedTweet not found");
-      }
 
       return executedTweet;
     },
@@ -71,6 +67,7 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
         ProjectionExpression: itemName,
       });
 
+      // TODO: handle error
       if (!res.Item) {
         throw new Error(`${itemName} not found`);
       }

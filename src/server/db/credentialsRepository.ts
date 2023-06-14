@@ -23,7 +23,7 @@ export const credentialsRepository = (id: Credentials["id"]) => {
       });
     },
 
-    readCredentials: async (): Promise<Credentials> => {
+    readCredentials: async (): Promise<Credentials | undefined> => {
       const res = await ddbDocClient.get({
         TableName: AWS_CONFIG.TABLE_NAME,
         Key: {
@@ -33,7 +33,7 @@ export const credentialsRepository = (id: Credentials["id"]) => {
       });
 
       if (!res.Item) {
-        throw new Error("Credentials not found");
+        return undefined;
       }
 
       const credentials = res.Item as Credentials;
