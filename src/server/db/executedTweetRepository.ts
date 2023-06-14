@@ -59,5 +59,59 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
 
       return executedTweet;
     },
+
+    updateExecutedTweet: async (
+      executedTweet: Partial<ExecutedTweet> & Pick<ExecutedTweet, "ebId">
+    ): Promise<ExecutedTweet> => {
+      const res = await ddbDocClient.get({
+        TableName: tableName,
+        Key: {
+          id,
+        },
+        ProjectionExpression: itemName,
+      });
+
+      if (!res.Item) {
+        throw new Error(`${itemName} not found`);
+      }
+
+      let updatedExecutedTweet: ExecutedTweet | undefined = undefined;
+
+      const ExecutedTweetList = (res.Item[itemName] ?? []) as ExecutedTweet[];
+      const newExecutedTweetList = ExecutedTweetList.map((item) => {
+        if (item.ebId === executedTweet.ebId) {
+          const newExecutedTweet: ExecutedTweet = {
+            ...item,
+            scheduledDeletionDate: executedTweet.scheduledDeletionDate
+              ? executedTweet.scheduledDeletionDate
+              : item.scheduledDeletionDate,
+            isTweetDeleted: executedTweet.isTweetDeleted ? executedTweet.isTweetDeleted : item.isTweetDeleted,
+          };
+          updatedExecutedTweet = newExecutedTweet;
+          return newExecutedTweet;
+        }
+        return item;
+      });
+
+      await ddbDocClient.update({
+        TableName: tableName,
+        Key: {
+          id,
+        },
+        UpdateExpression: "SET #tl = :t",
+        ExpressionAttributeNames: {
+          "#tl": itemName,
+        },
+        ExpressionAttributeValues: {
+          ":t": newExecutedTweetList,
+        },
+      });
+
+      if (!updatedExecutedTweet) {
+        throw new Error("executedTweet not found");
+      }
+
+      return updatedExecutedTweet as ExecutedTweet;
+    },
   };
 };
