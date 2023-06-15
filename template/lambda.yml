@@ -33,6 +33,7 @@ Resources:
       Handler: tweet.tweet
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs18.x
+      Timeout: 10
       Environment:
         Variables:
           CLIENT_ID: !Ref CLIENTID
@@ -49,6 +50,7 @@ Resources:
       Handler: deleteTweet.deleteTweet
       Role: !GetAtt LambdaRole.Arn
       Runtime: nodejs18.x
+      Timeout: 10
       Environment:
         Variables:
           CLIENT_ID: !Ref CLIENTID
