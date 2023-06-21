@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from "next";
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider } from "@mui/material/";
 import dayjs from "dayjs";
-import { DATE_TYPE_LABEL, DAY_OF_WEEK_LABEL } from "@/constants";
+import { DATE_TYPE_LABEL, DAY_OF_WEEK_LABEL, PAGES } from "@/constants";
 import { trpcHelper } from "@/server/routers/_app";
 import Link from "next/link";
 import { CreateDialog } from "@/components/pages/tweet/CreateDialog";
@@ -36,6 +36,9 @@ const Page: NextPage = () => {
       <h1>Tweet</h1>
       <Link href={{ query: { type: DIALOG_TYPE.CREATE } }} shallow>
         <Button variant="contained">新規作成</Button>
+      </Link>
+      <Link href={PAGES.TWEET_HISTORY}>
+        <Button variant="contained">履歴</Button>
       </Link>
       <Divider sx={{ margin: "30px 0" }} />
       <h2>Tweet List</h2>
