@@ -56,6 +56,22 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
       return executedTweet;
     },
 
+    readExecutedTweetList: async (): Promise<ExecutedTweet[]> => {
+      const res = await ddbDocClient.get({
+        TableName: tableName,
+        Key: {
+          id,
+        },
+        ProjectionExpression: itemName,
+      });
+
+      if (!res.Item) {
+        return [];
+      }
+
+      return res.Item[itemName] ?? [];
+    },
+
     updateExecutedTweet: async (
       executedTweet: Partial<ExecutedTweet> & Pick<ExecutedTweet, "ebId">
     ): Promise<ExecutedTweet> => {
