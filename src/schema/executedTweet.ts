@@ -7,7 +7,6 @@ export const executedTweet = z.object({
   text: z.string(),
   tweetedAt: z.date(),
   scheduledDeletionDate: z.date().nullable(),
-  isTweetDeleted: z.boolean(),
 });
 
 export type ExecutedTweet = z.infer<typeof executedTweet>;

@@ -3,6 +3,7 @@ import { trpcHelper } from "@/server/routers/_app";
 import { GetServerSideProps, NextPage } from "next";
 import dayjs from "dayjs";
 import { useUserInfoWithStorage } from "@/hooks/useUserInfoWithStorage";
+import { Button } from "@mui/material";
 
 const Index: NextPage = () => {
   const { getExecutedTweetList } = useCacheOfExecutedTweetList();
@@ -13,7 +14,7 @@ const Index: NextPage = () => {
     <div>
       <h1>履歴</h1>
 
-      {executedTweetList.map(({ text, tweetedAt, tweetId, isTweetDeleted, scheduledDeletionDate }) => (
+      {executedTweetList.map(({ text, tweetedAt, tweetId, scheduledDeletionDate }) => (
         <div key={tweetId} style={{ marginBottom: "20px" }}>
           <p>ツイート内容：{text}</p>
           <p>ツイート日時：{dayjs(tweetedAt).format("YYYY/MM/DD HH:mm")}</p>
@@ -21,8 +22,8 @@ const Index: NextPage = () => {
             ツイートの削除日時：
             {scheduledDeletionDate ? `${dayjs(scheduledDeletionDate).format("YYYY/MM/DD HH:mm")}` : "-"}
           </p>
-          <p>{isTweetDeleted ? "削除済み" : "未削除"}</p>
-          {userInfo.isLogin && !isTweetDeleted && (
+          {dayjs(scheduledDeletionDate).isAfter(dayjs()) && <Button>ツイートの自動削除を取り消す</Button>}
+          {userInfo.isLogin && (
             <a
               href={`https://twitter.com/${userInfo.userName}/status/${tweetId}`}
               target="_blank"

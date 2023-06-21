@@ -15,7 +15,6 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
 
       const item: ExecutedTweet = {
         ...executedTweet,
-        isTweetDeleted: false,
         tweetedAt: nowDate,
       };
 
@@ -73,7 +72,7 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
     },
 
     updateExecutedTweet: async (
-      executedTweet: Partial<ExecutedTweet> & Pick<ExecutedTweet, "ebId">
+      executedTweet: Pick<ExecutedTweet, "ebId" | "scheduledDeletionDate">
     ): Promise<ExecutedTweet> => {
       const res = await ddbDocClient.get({
         TableName: tableName,
@@ -90,15 +89,12 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
 
       let updatedExecutedTweet: ExecutedTweet | undefined = undefined;
 
-      const ExecutedTweetList = (res.Item[itemName] ?? []) as ExecutedTweet[];
-      const newExecutedTweetList = ExecutedTweetList.map((item) => {
+      const executedTweetList = (res.Item[itemName] ?? []) as ExecutedTweet[];
+      const newExecutedTweetList = executedTweetList.map((item) => {
         if (item.ebId === executedTweet.ebId) {
           const newExecutedTweet: ExecutedTweet = {
             ...item,
-            scheduledDeletionDate: executedTweet.scheduledDeletionDate
-              ? executedTweet.scheduledDeletionDate
-              : item.scheduledDeletionDate,
-            isTweetDeleted: executedTweet.isTweetDeleted ? executedTweet.isTweetDeleted : item.isTweetDeleted,
+            scheduledDeletionDate: executedTweet.scheduledDeletionDate,
           };
           updatedExecutedTweet = newExecutedTweet;
           return newExecutedTweet;
@@ -125,6 +121,52 @@ export const executedTweetRepository = (id: Credentials["id"]) => {
       }
 
       return updatedExecutedTweet as ExecutedTweet;
+    },
+
+    deleteExecutedTweet: async (ebId: string): Promise<ExecutedTweet> => {
+      const res = await ddbDocClient.get({
+        TableName: tableName,
+        Key: {
+          id,
+        },
+        ProjectionExpression: itemName,
+      });
+
+      // TODO: handle error
+      if (!res.Item) {
+        throw new Error(`${itemName} not found`);
+      }
+
+      const executedTweetList = (res.Item[itemName] ?? []) as ExecutedTweet[];
+      let deletedExecutedTweet: ExecutedTweet | undefined = undefined;
+
+      const newExecutedTweetList = executedTweetList.filter((executedTweet) => {
+        if (executedTweet.ebId === ebId) {
+          deletedExecutedTweet = executedTweet;
+          return false;
+        }
+        return true;
+      });
+
+      await ddbDocClient.update({
+        TableName: tableName,
+        Key: {
+          id,
+        },
+        UpdateExpression: "SET #tl = :t",
+        ExpressionAttributeNames: {
+          "#tl": itemName,
+        },
+        ExpressionAttributeValues: {
+          ":t": newExecutedTweetList,
+        },
+      });
+
+      if (!deletedExecutedTweet) {
+        throw new Error(`${itemName} not found`);
+      }
+
+      return deletedExecutedTweet as ExecutedTweet;
     },
   };
 };

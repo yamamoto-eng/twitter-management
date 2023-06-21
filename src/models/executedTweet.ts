@@ -5,5 +5,4 @@ export type ExecutedTweet = {
   text: string;
   tweetedAt: string;
   scheduledDeletionDate: string | null;
-  isTweetDeleted: boolean;
 };

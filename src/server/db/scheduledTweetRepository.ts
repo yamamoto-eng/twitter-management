@@ -159,7 +159,7 @@ export const scheduledTweetRepository = (id: Credentials["id"]) => {
       });
 
       if (!deletedScheduledTweet) {
-        throw new Error("scheduledTweet not found");
+        throw new Error(`${itemName} not found`);
       }
 
       return deletedScheduledTweet as ScheduledTweet;
