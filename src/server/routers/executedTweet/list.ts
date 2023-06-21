@@ -11,7 +11,9 @@ export const list = procedure.output(output).query(async ({ ctx }) => {
     return {
       ...executedTweet,
       tweetedAt: dayjs(executedTweet.tweetedAt).toDate(),
-      scheduledDeletionDate: dayjs(executedTweet.scheduledDeletionDate).toDate(),
+      scheduledDeletionDate: executedTweet.scheduledDeletionDate
+        ? dayjs(executedTweet.scheduledDeletionDate).toDate()
+        : null,
     };
   });
 
