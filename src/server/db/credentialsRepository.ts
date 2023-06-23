@@ -1,10 +1,11 @@
-import { decrypt, encrypt } from "@/server/utils";
+import { encryption } from "@/server/utils";
 import { ddbDocClient } from "../../libs";
 import { AWS_CONFIG } from "@/constants";
 import { Credentials } from "@/models";
 import dayjs from "dayjs";
 
 export const credentialsRepository = (id: Credentials["id"]) => {
+  const { encrypt, decrypt } = encryption();
   const nowDate = dayjs().toISOString();
 
   return {

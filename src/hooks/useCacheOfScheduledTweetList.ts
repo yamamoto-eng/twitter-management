@@ -6,23 +6,23 @@ import { getQueryKey } from "@trpc/react-query";
 
 export const useCacheOfScheduledTweetList = () => {
   const queryClient = useQueryClient();
-  const scheduledTweetListKey = getQueryKey(trpc.scheduledTweet.list, undefined, "query");
+  const key = getQueryKey(trpc.scheduledTweet.list, undefined, "query");
 
   return {
     getScheduledTweet: (ebId: string) => {
-      const data = queryClient.getQueryData<Output>(scheduledTweetListKey);
+      const data = queryClient.getQueryData<Output>(key);
       const scheduledTweet = data?.scheduledTweetList.find((scheduledTweet) => scheduledTweet.ebId === ebId);
       return { scheduledTweet };
     },
 
     getScheduledTweetList: () => {
-      const data = queryClient.getQueryData<Output>(scheduledTweetListKey);
+      const data = queryClient.getQueryData<Output>(key);
       const scheduledTweetList = data?.scheduledTweetList ?? [];
       return { scheduledTweetList };
     },
 
     addScheduledTweet: (scheduledTweet: ScheduledTweet) => {
-      queryClient.setQueryData<Output>(scheduledTweetListKey, (data) => {
+      queryClient.setQueryData<Output>(key, (data) => {
         const scheduledTweetList = data?.scheduledTweetList ?? [];
         return {
           scheduledTweetList: [...scheduledTweetList, scheduledTweet],
@@ -31,7 +31,7 @@ export const useCacheOfScheduledTweetList = () => {
     },
 
     updateScheduledTweet: (scheduledTweet: ScheduledTweet) => {
-      queryClient.setQueryData<Output>(scheduledTweetListKey, (data) => {
+      queryClient.setQueryData<Output>(key, (data) => {
         const scheduledTweetList = data?.scheduledTweetList ?? [];
         return {
           scheduledTweetList: scheduledTweetList.map((item) =>
@@ -42,7 +42,7 @@ export const useCacheOfScheduledTweetList = () => {
     },
 
     removeScheduledTweet: (ebId: string) => {
-      queryClient.setQueryData<Output>(scheduledTweetListKey, (data) => {
+      queryClient.setQueryData<Output>(key, (data) => {
         const scheduledTweetList = data?.scheduledTweetList ?? [];
         return {
           scheduledTweetList: scheduledTweetList.filter((scheduledTweet) => scheduledTweet.ebId !== ebId),
