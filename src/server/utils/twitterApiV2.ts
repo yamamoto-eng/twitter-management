@@ -1,13 +1,12 @@
 import { UsersApi, Configuration, TweetsApi } from "@/api-client/twitter-v2";
 import { isAxiosError } from "axios";
 import { tokenRefresh } from "../services";
-import { credentialsRepository } from "../db";
-import { Credentials } from "@/models";
+import { credentialRepository } from "../db";
 
 export class TwitterApiV2 {
   private readonly config;
 
-  constructor(accessToken: Credentials["accessToken"]) {
+  constructor(accessToken: string) {
     this.config = new Configuration({
       accessToken,
     });
@@ -22,16 +21,16 @@ export class TwitterApiV2 {
   }
 }
 
-export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: TwitterApiV2) => T): Promise<T> => {
-  const { readCredentials, updateCredentials } = credentialsRepository(id);
+export const twitterApiV2 = async <T>(id: string, api: (client: TwitterApiV2) => T): Promise<T> => {
+  const { find, save } = credentialRepository(id);
 
-  const credentials = await readCredentials();
+  const credential = await find();
 
-  if (!credentials) {
-    throw new Error("Credentials not found");
+  if (!credential) {
+    throw new Error("Credential not found");
   }
 
-  const client = new TwitterApiV2(credentials.accessToken);
+  const client = new TwitterApiV2(credential.accessToken);
 
   try {
     return await api(client);
@@ -40,9 +39,9 @@ export const twitterApiV2 = async <T>(id: Credentials["id"], api: (client: Twitt
       if (e.response?.status === 401 && e.response?.statusText === "Unauthorized") {
         const {
           data: { access_token, refresh_token },
-        } = await tokenRefresh({ refreshToken: credentials.refreshToken });
+        } = await tokenRefresh({ refreshToken: credential.refreshToken });
 
-        await updateCredentials(access_token, refresh_token);
+        await save({ accessToken: access_token, refreshToken: refresh_token });
 
         const client = new TwitterApiV2(access_token);
         return await api(client);

@@ -1,9 +1,9 @@
 import { ddbDocClient } from "../../libs";
 import { AWS_CONFIG } from "@/constants";
-import { Credentials, ScheduledTweet } from "@/models";
+import { ScheduledTweet } from "@/server/models";
 import dayjs from "dayjs";
 
-export const scheduledTweetRepository = (id: Credentials["id"]) => {
+export const scheduledTweetRepository = (id: string) => {
   const tableName = AWS_CONFIG.TABLE_NAME;
   const itemName = AWS_CONFIG.TABLE_ITEMS.SCHEDULED_TWEET_LIST;
 

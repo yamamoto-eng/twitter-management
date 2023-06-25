@@ -1,3 +1,3 @@
-export * from "./credentials";
+export * from "./credential";
 export * from "./scheduledTweet";
 export * from "./executedTweet";

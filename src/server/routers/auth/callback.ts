@@ -2,7 +2,7 @@ import { procedure } from "@/server/trpc";
 import { tokenAuthorizationCode } from "@/server/services";
 import { TwitterApiV2 } from "@/server/utils";
 import { TWITTER_CONFIG } from "@/constants";
-import { credentialsRepository } from "@/server/db";
+import { credentialRepository } from "@/server/db";
 import { input, output } from "@/schema/auth";
 
 export const callback = procedure
@@ -31,15 +31,9 @@ export const callback = procedure
         return { success: false };
       }
 
-      const { createCredentials, readCredentials, updateCredentials } = credentialsRepository(data.id);
+      const { save } = credentialRepository(data.id);
 
-      const credentials = await readCredentials();
-
-      if (!credentials) {
-        await createCredentials(access_token, refresh_token);
-      } else {
-        await updateCredentials(access_token, refresh_token);
-      }
+      await save({ accessToken: access_token, refreshToken: refresh_token });
 
       ctx.session.id = data.id;
       await ctx.session.save();

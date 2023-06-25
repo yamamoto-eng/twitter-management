@@ -1,9 +1,9 @@
 import { AWS_CONFIG } from "@/constants";
 import { ddbDocClient } from "@/libs";
-import { Credentials, ExecutedTweet } from "@/models";
+import { ExecutedTweet } from "@/server/models";
 import dayjs from "dayjs";
 
-export const executedTweetRepository = (id: Credentials["id"]) => {
+export const executedTweetRepository = (id: string) => {
   const tableName = AWS_CONFIG.TABLE_NAME;
   const itemName = AWS_CONFIG.TABLE_ITEMS.EXECUTED_TWEET_LIST;
 

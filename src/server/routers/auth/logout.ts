@@ -1,18 +1,18 @@
 import { procedure } from "@/server/trpc";
 import { tokenRevoke } from "@/server/services";
-import { credentialsRepository } from "@/server/db";
+import { credentialRepository } from "@/server/db";
 
 export const logout = procedure.mutation(async ({ ctx }) => {
-  const { readCredentials } = credentialsRepository(ctx.session.id);
+  const { find } = credentialRepository(ctx.session.id);
 
   try {
-    const credentials = await readCredentials();
+    const credential = await find();
 
-    if (!credentials) {
+    if (!credential) {
       return { success: false };
     }
 
-    const { data } = await tokenRevoke({ accessToken: credentials.accessToken });
+    const { data } = await tokenRevoke({ accessToken: credential.accessToken });
 
     if (!data.revoked) {
       return { success: false };
