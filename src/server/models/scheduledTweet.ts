@@ -18,7 +18,7 @@ export type ScheduledTweetAPP = {
  * @property {string} GSI1HASH - `SCHEDULED_TWEET|${id}`
  * @property {string} GSI1RANGE - createdAt
  */
-export type ScheduledTweetDB = Base & {
+export type ScheduledTweetDB = Pick<Base, "HASH" | "GSI1HASH" | "GSI1RANGE"> & {
   text: string;
   fromDate: string;
   toDate: string;

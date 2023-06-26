@@ -23,20 +23,22 @@ export const executedTweetRepository = (id: string) => {
         Key: {
           HASH: input.HASH,
         },
-        UpdateExpression: `SET #GSI1HASH = :GSI1HASH, #GSI1RANGE = if_not_exists(#GSI1RANGE, :GSI1RANGE), #scheduledDeletionDate = :scheduledDeletionDate, #scheduledEbId = :scheduledEbId, #tweetId = :tweetId, #text = :text`,
+        UpdateExpression: `SET #GSI1HASH = :GSI1HASH, #GSI1RANGE = if_not_exists(#GSI1RANGE, :GSI1RANGE), #scheduledDeletionDate = :scheduledDeletionDate, #GSI2HASH = :GSI2HASH, #GSI2RANGE = :GSI2RANGE, #tweetId = :tweetId, #text = :text`,
         ExpressionAttributeValues: {
           ":GSI1HASH": input.GSI1HASH,
           ":GSI1RANGE": input.GSI1RANGE,
           ":scheduledDeletionDate": input.scheduledDeletionDate,
-          ":scheduledEbId": input.scheduledEbId,
+          ":GSI2HASH": input.GSI2HASH,
+          ":GSI2RANGE": input.GSI2RANGE,
           ":tweetId": input.tweetId,
           ":text": input.text,
         },
         ExpressionAttributeNames: {
           "#GSI1HASH": "GSI1HASH",
           "#GSI1RANGE": "GSI1RANGE",
+          "#GSI2HASH": "GSI2HASH",
+          "#GSI2RANGE": "GSI2RANGE",
           "#scheduledDeletionDate": "scheduledDeletionDate",
-          "#scheduledEbId": "scheduledEbId",
           "#tweetId": "tweetId",
           "#text": "text",
         },
@@ -90,6 +92,26 @@ export const executedTweetRepository = (id: string) => {
       }
 
       return toAPP(res.Item as ExecutedTweetDB);
+    },
+
+    findAllByScheduledEbId: async (scheduledEbId: string): Promise<ExecutedTweetAPP[]> => {
+      const command = new QueryCommand({
+        TableName: tableName,
+        IndexName: "GSI2",
+        KeyConditionExpression: "GSI2HASH = :gh and GSI2RANGE >= :gr",
+        ExpressionAttributeValues: {
+          ":gh": scheduledEbId,
+          ":gr": dayjs("2000-01-01").toISOString(),
+        },
+      });
+
+      const res = await ddbDocClient.send(command);
+
+      if (!res.Items) {
+        return [];
+      }
+
+      return res.Items.map((item) => toAPP(item as ExecutedTweetDB));
     },
 
     findAll: async (): Promise<ExecutedTweetAPP[]> => {

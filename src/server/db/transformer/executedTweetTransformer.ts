@@ -7,9 +7,10 @@ export const executedTweetTransformer = () => {
       HASH: data.ebId,
       GSI1HASH: `${AWS_CONFIG.LOGICAL_TABLES.EXECUTED_TWEET}|${data.id}`,
       GSI1RANGE: data.tweetedAt,
+      GSI2HASH: data.scheduledEbId,
+      GSI2RANGE: data.tweetedAt,
       text: data.text,
       tweetId: data.tweetId,
-      scheduledEbId: data.scheduledEbId,
       scheduledDeletionDate: data.scheduledDeletionDate,
     }),
 
@@ -20,7 +21,7 @@ export const executedTweetTransformer = () => {
       tweetedAt: data.GSI1RANGE,
       tweetId: data.tweetId,
       scheduledDeletionDate: data.scheduledDeletionDate,
-      scheduledEbId: data.scheduledEbId,
+      scheduledEbId: data.GSI2HASH,
     }),
   };
 };

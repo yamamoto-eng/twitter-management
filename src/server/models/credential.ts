@@ -13,7 +13,7 @@ export type CredentialAPP = {
  * @property {string} GSI1HASH - `CREDENTIAL|${id}`
  * @property {string} GSI1RANGE - createdAt
  */
-export type CredentialDB = Base & {
+export type CredentialDB = Pick<Base, "HASH" | "GSI1HASH" | "GSI1RANGE"> & {
   accessToken: string;
   refreshToken: string;
   updatedAt: string;

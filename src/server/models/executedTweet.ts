@@ -14,9 +14,10 @@ export type ExecutedTweetAPP = {
  * @property {string} HASH - ebId
  * @property {string} GSI1HASH - `EXECUTED_TWEET|${id}`
  * @property {string} GSI1RANGE - tweetedAt
+ * @property {string} GSI2HASH - scheduledEbId
+ * @property {string} GSI2RANGE - tweetedAt
  */
 export type ExecutedTweetDB = Base & {
-  scheduledEbId: string;
   tweetId: string;
   text: string;
   scheduledDeletionDate: string | null;
