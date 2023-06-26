@@ -95,6 +95,9 @@ const Page: NextPage = () => {
                   <Link href={{ query: { type: DIALOG_TYPE.DELETE, id: scheduledTweet.ebId } }} shallow>
                     <Button>削除</Button>
                   </Link>
+                  <Link href={{ pathname: PAGES.TWEET_HISTORY_DETAIL, query: { ebId: scheduledTweet.ebId } }} shallow>
+                    <Button>履歴</Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

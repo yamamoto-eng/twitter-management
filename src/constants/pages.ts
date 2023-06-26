@@ -3,4 +3,5 @@ export const PAGES = {
   LOGIN: "/login",
   TWEET: "/tweet",
   TWEET_HISTORY: "/tweet/history",
+  TWEET_HISTORY_DETAIL: "/tweet/history/[ebId]",
 } as const;
