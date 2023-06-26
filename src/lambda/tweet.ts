@@ -16,10 +16,10 @@ dayjs.locale("ja");
 
 export const tweet = async (event: TweetLambdaEvent) => {
   const uuid = v4();
-  const { readScheduledTweet, updateScheduledTweet } = scheduledTweetRepository(event.id);
+  const { findById, save } = scheduledTweetRepository(event.id);
   const { addExecutedTweet } = executedTweetRepository(event.id);
 
-  const scheduledTweet = await readScheduledTweet(event.ebId);
+  const scheduledTweet = await findById(event.ebId);
 
   // TODO: remove rule and target
   if (!scheduledTweet) {
@@ -42,7 +42,7 @@ export const tweet = async (event: TweetLambdaEvent) => {
   }
 
   await updateRule({ ebId: event.ebId, date });
-  await updateScheduledTweet({ ...scheduledTweet, fromDate: fromDate.toISOString(), toDate: toDate.toISOString() });
+  await save({ ...scheduledTweet, fromDate: fromDate.toISOString(), toDate: toDate.toISOString() });
 
   let deletedDate = null;
 

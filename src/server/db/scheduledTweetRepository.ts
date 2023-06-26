@@ -1,168 +1,109 @@
 import { ddbDocClient } from "../../libs";
 import { AWS_CONFIG } from "@/constants";
-import { ScheduledTweet } from "@/server/models";
+import { ScheduledTweetAPP, ScheduledTweetDB } from "@/server/models";
 import dayjs from "dayjs";
+import { scheduledTweetTransformer } from "./transformer/scheduledTweetTransformer";
+import { DeleteCommand, GetCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 export const scheduledTweetRepository = (id: string) => {
   const tableName = AWS_CONFIG.TABLE_NAME;
-  const itemName = AWS_CONFIG.TABLE_ITEMS.SCHEDULED_TWEET_LIST;
+  const { toAPP, toDB } = scheduledTweetTransformer();
 
   return {
-    addScheduledTweet: async (scheduledTweet: Omit<ScheduledTweet, "createdAt">): Promise<ScheduledTweet> => {
+    save: async (scheduledTweet: Omit<ScheduledTweetAPP, "createdAt">): Promise<ScheduledTweetAPP | undefined> => {
       const nowDate = dayjs().toISOString();
 
-      const item: ScheduledTweet = {
-        ...scheduledTweet,
+      const input = toDB({
+        id: scheduledTweet.id,
+        ebId: scheduledTweet.ebId,
+        text: scheduledTweet.text,
+        fromDate: scheduledTweet.fromDate,
+        toDate: scheduledTweet.toDate,
+        isEnabled: scheduledTweet.isEnabled,
+        interval: scheduledTweet.interval,
+        scheduledDeletionDay: scheduledTweet.scheduledDeletionDay,
         createdAt: nowDate,
-      };
-      await ddbDocClient.update({
+      });
+
+      const command = new UpdateCommand({
         TableName: tableName,
         Key: {
-          id,
+          HASH: input.HASH,
         },
-        UpdateExpression: "SET #tl = list_append(if_not_exists(#tl, :empty), :t)",
-        ExpressionAttributeNames: {
-          "#tl": itemName,
-        },
+        UpdateExpression: `SET GSI1HASH = :GSI1HASH, GSI1RANGE = if_not_exists(GSI1RANGE, :GSI1RANGE), fromDate = :fromDate, toDate = :toDate, isEnabled = :isEnabled, interval = :interval, scheduledDeletionDay = :scheduledDeletionDay, text = :text`,
         ExpressionAttributeValues: {
-          ":t": [item],
-          ":empty": [],
+          ":GSI1HASH": input.GSI1HASH,
+          ":GSI1RANGE": input.GSI1RANGE,
+          ":fromDate": input.fromDate,
+          ":toDate": input.toDate,
+          ":isEnabled": input.isEnabled,
+          ":interval": input.interval,
+          ":scheduledDeletionDay": input.scheduledDeletionDay,
+          ":text": input.text,
         },
       });
 
-      return item;
+      const res = await ddbDocClient.send(command);
+
+      if (!res.Attributes) {
+        return undefined;
+      }
+
+      return toAPP(res.Attributes as ScheduledTweetDB);
     },
 
-    readScheduledTweet: async (ebId: string): Promise<ScheduledTweet | undefined> => {
-      const res = await ddbDocClient.get({
+    findById: async (ebId: string): Promise<ScheduledTweetAPP | undefined> => {
+      const command = new GetCommand({
         TableName: tableName,
         Key: {
-          id,
+          HASH: ebId,
         },
-        ProjectionExpression: itemName,
       });
+
+      const res = await ddbDocClient.send(command);
 
       if (!res.Item) {
         return undefined;
       }
 
-      const scheduledTweetList: ScheduledTweet[] = res.Item[itemName] ?? [];
-      const scheduledTweet = scheduledTweetList.find((scheduledTweet) => scheduledTweet.ebId === ebId);
-
-      if (!scheduledTweet) {
-        throw new Error("scheduledTweet not found");
-      }
-
-      return scheduledTweet;
+      return toAPP(res.Item as ScheduledTweetDB);
     },
 
-    readScheduledTweetList: async (): Promise<ScheduledTweet[]> => {
-      const res = await ddbDocClient.get({
+    findAll: async (): Promise<ScheduledTweetAPP[]> => {
+      const command = new QueryCommand({
         TableName: tableName,
-        Key: {
-          id,
+        IndexName: "GSI1",
+        KeyConditionExpression: "GSI1HASH = :gh and GSI1RANGE = :gr",
+        ExpressionAttributeValues: {
+          ":gh": `${AWS_CONFIG.LOGICAL_TABLES.EXECUTED_TWEET}|${id}`,
+          ":gr": dayjs("2000-01-01").toISOString(),
         },
-        ProjectionExpression: itemName,
       });
 
-      if (!res.Item) {
+      const res = await ddbDocClient.send(command);
+
+      if (!res.Items) {
         return [];
       }
 
-      return res.Item[itemName] ?? [];
+      return res.Items.map((item) => toAPP(item as ScheduledTweetDB));
     },
 
-    updateScheduledTweet: async (scheduledTweet: Omit<ScheduledTweet, "createdAt">): Promise<ScheduledTweet> => {
-      const res = await ddbDocClient.get({
+    remove: async (ebId: string): Promise<ScheduledTweetAPP | undefined> => {
+      const command = new DeleteCommand({
         TableName: tableName,
         Key: {
-          id,
+          HASH: ebId,
         },
-        ProjectionExpression: itemName,
       });
 
-      // TODO: handle error
-      if (!res.Item) {
-        throw new Error(`${itemName} not found`);
+      const res = await ddbDocClient.send(command);
+
+      if (!res.Attributes) {
+        return undefined;
       }
 
-      let updatedScheduledTweet: ScheduledTweet | undefined = undefined;
-
-      const scheduledTweetList = (res.Item[itemName] ?? []) as ScheduledTweet[];
-      const newScheduledTweetList = scheduledTweetList.map((item) => {
-        if (item.ebId === scheduledTweet.ebId) {
-          const newScheduledTweet = { ...item, ...scheduledTweet };
-          updatedScheduledTweet = newScheduledTweet;
-          return newScheduledTweet;
-        }
-        return item;
-      });
-
-      await ddbDocClient.update({
-        TableName: tableName,
-        Key: {
-          id,
-        },
-        UpdateExpression: "SET #tl = :t",
-        ExpressionAttributeNames: {
-          "#tl": itemName,
-        },
-        ExpressionAttributeValues: {
-          ":t": newScheduledTweetList,
-        },
-      });
-
-      if (!updatedScheduledTweet) {
-        throw new Error("scheduledTweet not found");
-      }
-
-      return updatedScheduledTweet as ScheduledTweet;
-    },
-
-    deleteScheduledTweet: async (ebId: string): Promise<ScheduledTweet> => {
-      const res = await ddbDocClient.get({
-        TableName: tableName,
-        Key: {
-          id,
-        },
-        ProjectionExpression: itemName,
-      });
-
-      // TODO: handle error
-      if (!res.Item) {
-        throw new Error(`${itemName} not found`);
-      }
-
-      const scheduledTweetList = (res.Item[itemName] ?? []) as ScheduledTweet[];
-      let deletedScheduledTweet: ScheduledTweet | undefined = undefined;
-
-      const newScheduledTweetList = scheduledTweetList.filter((scheduledTweet) => {
-        if (scheduledTweet.ebId === ebId) {
-          deletedScheduledTweet = scheduledTweet;
-          return false;
-        }
-        return true;
-      });
-
-      await ddbDocClient.update({
-        TableName: tableName,
-        Key: {
-          id,
-        },
-        UpdateExpression: "SET #tl = :t",
-        ExpressionAttributeNames: {
-          "#tl": itemName,
-        },
-        ExpressionAttributeValues: {
-          ":t": newScheduledTweetList,
-        },
-      });
-
-      if (!deletedScheduledTweet) {
-        throw new Error(`${itemName} not found`);
-      }
-
-      return deletedScheduledTweet as ScheduledTweet;
+      return toAPP(res.Attributes as ScheduledTweetDB);
     },
   };
 };

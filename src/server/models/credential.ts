@@ -1,10 +1,5 @@
 import { Base } from "./base";
 
-/**
- * @property {string} id - id
- * @property {string} GSI1HASH - `CREDENTIAL|${id}`
- * @property {string} GSI1RANGE - createdAt
- */
 export type CredentialAPP = {
   id: string;
   accessToken: string;
@@ -13,6 +8,11 @@ export type CredentialAPP = {
   updatedAt: string;
 };
 
+/**
+ * @property {string} HASH - id
+ * @property {string} GSI1HASH - `CREDENTIAL|${id}`
+ * @property {string} GSI1RANGE - createdAt
+ */
 export type CredentialDB = Base & {
   accessToken: string;
   refreshToken: string;

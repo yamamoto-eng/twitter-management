@@ -19,7 +19,7 @@ export const create = procedure
     const { fromDate, toDate } = createNextDateForTime(dayjs(input.fromTime), dayjs(input.toTime), input.interval);
     const { date } = createRandomDateInRange(fromDate, toDate);
 
-    const { addScheduledTweet } = scheduledTweetRepository(ctx.session.id);
+    const { save } = scheduledTweetRepository(ctx.session.id);
 
     const { arn } = await getArn({ functionName: AWS_CONFIG.LAMBDA_FUNCTION_NAME.TWEET });
 
@@ -35,7 +35,8 @@ export const create = procedure
     await createRule({ ebId: uuid, date, isEnabled: input.isEnabled });
     await createTarget({ ebId: uuid, event, arn: arn });
 
-    const scheduledTweet = await addScheduledTweet({
+    const scheduledTweet = await save({
+      id: ctx.session.id,
       ebId: uuid,
       text: input.text,
       fromDate: fromDate.toISOString(),
@@ -44,6 +45,10 @@ export const create = procedure
       interval: input.interval,
       scheduledDeletionDay: input.scheduledDeletionDay,
     });
+
+    if (!scheduledTweet) {
+      throw new Error("Failed to save scheduled tweet");
+    }
 
     return {
       scheduledTweet: {

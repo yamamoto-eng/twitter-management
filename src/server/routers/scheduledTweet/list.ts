@@ -4,8 +4,8 @@ import { output } from "@/schema/scheduledTweet/list";
 import dayjs from "dayjs";
 
 export const list = procedure.output(output).query(async ({ ctx }) => {
-  const { readScheduledTweetList } = scheduledTweetRepository(ctx.session.id);
-  const scheduledTweetList = await readScheduledTweetList();
+  const { findAll } = scheduledTweetRepository(ctx.session.id);
+  const scheduledTweetList = await findAll();
 
   const newScheduledTweetList = scheduledTweetList.map((scheduledTweet) => {
     return {

@@ -6,6 +6,7 @@ import { GetCommand, DeleteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb"
 import { CredentialDB, CredentialAPP } from "../models";
 
 export const credentialRepository = (id: string) => {
+  const tableName = AWS_CONFIG.TABLE_NAME;
   const nowDate = dayjs().toISOString();
   const { toDB, toAPP } = credentialTransformer();
 
@@ -22,9 +23,9 @@ export const credentialRepository = (id: string) => {
       });
 
       const command = new UpdateCommand({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
-          HASH: id,
+          HASH: input.HASH,
         },
         UpdateExpression: `SET GSI1HASH = :GSI1HASH, GSI1RANGE = if_not_exists(GSI1RANGE, :GSI1RANGE), accessToken = :accessToken, refreshToken = :refreshToken, updatedAt = :updatedAt`,
         ExpressionAttributeValues: {
@@ -47,7 +48,7 @@ export const credentialRepository = (id: string) => {
 
     find: async (): Promise<CredentialAPP | undefined> => {
       const command = new GetCommand({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           HASH: id,
         },
@@ -62,9 +63,9 @@ export const credentialRepository = (id: string) => {
       return toAPP(res.Item as CredentialDB);
     },
 
-    delete: async (): Promise<CredentialAPP | undefined> => {
+    remove: async (): Promise<CredentialAPP | undefined> => {
       const command = new DeleteCommand({
-        TableName: AWS_CONFIG.TABLE_NAME,
+        TableName: tableName,
         Key: {
           HASH: id,
         },

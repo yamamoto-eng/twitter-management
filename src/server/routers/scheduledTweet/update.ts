@@ -13,7 +13,7 @@ export const update = procedure
   .input(input)
   .output(output)
   .mutation(async ({ ctx, input }) => {
-    const { updateScheduledTweet } = scheduledTweetRepository(ctx.session.id);
+    const { save } = scheduledTweetRepository(ctx.session.id);
 
     const { fromDate, toDate } = createNextDateForTime(dayjs(input.fromTime), dayjs(input.toTime), input.interval);
     const { date } = createRandomDateInRange(fromDate, toDate);
@@ -32,7 +32,8 @@ export const update = procedure
     await createTarget({ arn, ebId: input.ebId, event });
     await updateRule({ ebId: input.ebId, date, isEnabled: input.isEnabled });
 
-    const scheduledTweet = await updateScheduledTweet({
+    const scheduledTweet = await save({
+      id: ctx.session.id,
       ebId: input.ebId,
       text: input.text,
       fromDate: fromDate.toISOString(),
@@ -41,6 +42,10 @@ export const update = procedure
       isEnabled: input.isEnabled,
       scheduledDeletionDay: input.scheduledDeletionDay,
     });
+
+    if (!scheduledTweet) {
+      throw new Error("Failed to save scheduled tweet");
+    }
 
     return {
       scheduledTweet: {
