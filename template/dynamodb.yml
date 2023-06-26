@@ -10,6 +10,10 @@ Resources:
           AttributeType: S
         - AttributeName: GSI1RANGE
           AttributeType: S
+        - AttributeName: GSI2HASH
+          AttributeType: S
+        - AttributeName: GSI2RANGE
+          AttributeType: S
       KeySchema:
         - AttributeName: HASH
           KeyType: HASH
@@ -19,6 +23,14 @@ Resources:
             - AttributeName: GSI1HASH
               KeyType: HASH
             - AttributeName: GSI1RANGE
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI2
+          KeySchema:
+            - AttributeName: GSI2HASH
+              KeyType: HASH
+            - AttributeName: GSI2RANGE
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
