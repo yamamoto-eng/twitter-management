@@ -10,8 +10,8 @@ dayjs.extend(utc);
 dayjs.locale("ja");
 
 export const deleteTweet = async (event: DeleteTweetLambdaEvent) => {
-  const { readExecutedTweet, deleteExecutedTweet } = executedTweetRepository(event.id);
-  const executedTweet = await readExecutedTweet(event.ebId);
+  const { findById, remove } = executedTweetRepository(event.id);
+  const executedTweet = await findById(event.ebId);
 
   await deleteTarget({ ebId: event.ebId });
   await deleteRule({ ebId: event.ebId });
@@ -23,7 +23,7 @@ export const deleteTweet = async (event: DeleteTweetLambdaEvent) => {
 
   if (executedTweet.scheduledDeletionDate) {
     await twitterApiV2(event.id, (client) => client.tweets.deleteTweetById(executedTweet.tweetId)).then(async () => {
-      await deleteExecutedTweet(event.ebId);
+      await remove(event.ebId);
     });
   }
 };

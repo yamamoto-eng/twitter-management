@@ -17,7 +17,7 @@ dayjs.locale("ja");
 export const tweet = async (event: TweetLambdaEvent) => {
   const uuid = v4();
   const { findById, save } = scheduledTweetRepository(event.id);
-  const { addExecutedTweet } = executedTweetRepository(event.id);
+  const { save: saveExecutedTweet } = executedTweetRepository(event.id);
 
   const scheduledTweet = await findById(event.ebId);
 
@@ -65,7 +65,8 @@ export const tweet = async (event: TweetLambdaEvent) => {
     await createTarget({ ebId: uuid, arn, event: deleteTweetLambdaEvent });
   }
 
-  await addExecutedTweet({
+  await saveExecutedTweet({
+    id: event.id,
     ebId: uuid,
     scheduledEbId: event.ebId,
     tweetId: data.id,

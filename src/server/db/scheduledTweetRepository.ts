@@ -14,14 +14,7 @@ export const scheduledTweetRepository = (id: string) => {
       const nowDate = dayjs().toISOString();
 
       const input = toDB({
-        id: scheduledTweet.id,
-        ebId: scheduledTweet.ebId,
-        text: scheduledTweet.text,
-        fromDate: scheduledTweet.fromDate,
-        toDate: scheduledTweet.toDate,
-        isEnabled: scheduledTweet.isEnabled,
-        interval: scheduledTweet.interval,
-        scheduledDeletionDay: scheduledTweet.scheduledDeletionDay,
+        ...scheduledTweet,
         createdAt: nowDate,
       });
 
@@ -30,7 +23,7 @@ export const scheduledTweetRepository = (id: string) => {
         Key: {
           HASH: input.HASH,
         },
-        UpdateExpression: `SET GSI1HASH = :GSI1HASH, GSI1RANGE = if_not_exists(GSI1RANGE, :GSI1RANGE), fromDate = :fromDate, toDate = :toDate, isEnabled = :isEnabled, interval = :interval, scheduledDeletionDay = :scheduledDeletionDay, text = :text`,
+        UpdateExpression: `SET GSI1HASH = :GSI1HASH, GSI1RANGE = if_not_exists(GSI1RANGE, :GSI1RANGE), fromDate = :fromDate, toDate = :toDate, isEnabled = :isEnabled, #interval = :interval, scheduledDeletionDay = :scheduledDeletionDay, #text = :text`,
         ExpressionAttributeValues: {
           ":GSI1HASH": input.GSI1HASH,
           ":GSI1RANGE": input.GSI1RANGE,
@@ -41,15 +34,15 @@ export const scheduledTweetRepository = (id: string) => {
           ":scheduledDeletionDay": input.scheduledDeletionDay,
           ":text": input.text,
         },
+        ExpressionAttributeNames: {
+          "#interval": "interval",
+          "#text": "text",
+        },
       });
 
-      const res = await ddbDocClient.send(command);
+      await ddbDocClient.send(command);
 
-      if (!res.Attributes) {
-        return undefined;
-      }
-
-      return toAPP(res.Attributes as ScheduledTweetDB);
+      return toAPP(input);
     },
 
     findById: async (ebId: string): Promise<ScheduledTweetAPP | undefined> => {
@@ -73,9 +66,9 @@ export const scheduledTweetRepository = (id: string) => {
       const command = new QueryCommand({
         TableName: tableName,
         IndexName: "GSI1",
-        KeyConditionExpression: "GSI1HASH = :gh and GSI1RANGE = :gr",
+        KeyConditionExpression: "GSI1HASH = :gh and GSI1RANGE >= :gr",
         ExpressionAttributeValues: {
-          ":gh": `${AWS_CONFIG.LOGICAL_TABLES.EXECUTED_TWEET}|${id}`,
+          ":gh": `${AWS_CONFIG.LOGICAL_TABLES.SCHEDULED_TWEET}|${id}`,
           ":gr": dayjs("2000-01-01").toISOString(),
         },
       });
@@ -95,6 +88,7 @@ export const scheduledTweetRepository = (id: string) => {
         Key: {
           HASH: ebId,
         },
+        ReturnValues: "ALL_OLD",
       });
 
       const res = await ddbDocClient.send(command);

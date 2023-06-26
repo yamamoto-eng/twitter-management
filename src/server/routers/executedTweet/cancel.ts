@@ -7,9 +7,13 @@ export const cancel = procedure
   .input(input)
   .output(output)
   .mutation(async ({ ctx, input }) => {
-    const { updateExecutedTweet } = executedTweetRepository(ctx.session.id);
+    const { updateScheduledDeletionDate } = executedTweetRepository(ctx.session.id);
 
-    const executedTweet = await updateExecutedTweet({ ebId: input.ebId, scheduledDeletionDate: null });
+    const executedTweet = await updateScheduledDeletionDate({ ebId: input.ebId, scheduledDeletionDate: null });
+
+    if (!executedTweet) {
+      throw new Error("executedTweet not found");
+    }
 
     return {
       executedTweet: {

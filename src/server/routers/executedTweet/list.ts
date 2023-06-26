@@ -4,8 +4,8 @@ import { executedTweetRepository } from "@/server/db";
 import dayjs from "dayjs";
 
 export const list = procedure.output(output).query(async ({ ctx }) => {
-  const { readExecutedTweetList } = executedTweetRepository(ctx.session.id);
-  const executedTweetList = await readExecutedTweetList();
+  const { findAll } = executedTweetRepository(ctx.session.id);
+  const executedTweetList = await findAll();
 
   const newExecutedTweetList = executedTweetList.map((executedTweet) => {
     return {
